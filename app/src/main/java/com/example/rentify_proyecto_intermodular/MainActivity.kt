@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
 import com.example.rentify_proyecto_intermodular.ui.theme.RentifyProyectoIntermodularTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RentifyProyectoIntermodularTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
+                    LoginScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
