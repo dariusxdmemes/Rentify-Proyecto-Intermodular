@@ -2,9 +2,11 @@ package com.example.rentify_proyecto_intermodular.ui.login
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 
 @Composable
 fun LoginScreen(modifier: Modifier) {
@@ -13,7 +15,8 @@ fun LoginScreen(modifier: Modifier) {
             .fillMaxSize()
     ) {
         Text(
-            text = "Login Works!"
+            text = "Login Works!",
+            style = MaterialTheme.typography.titleLarge
         )
     }
 
