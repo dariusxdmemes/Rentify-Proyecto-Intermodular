@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Rentify</string>
     <string name="app_slogan_login">Manage homes and people with love!</string>
+    <string name="app_slogan_register">Efficiency starts from home</string>
     <string name="radio_tenant_login">I am a tenant</string>
     <string name="radio_owner_login">I am an owner</string>
     <string name="email_label_textfield">Email</string>
@@ -8,4 +9,10 @@
     <string name="login_label_button">Login</string>
     <string name="signup_clickable_text">Not a user yet? Click here to sign up</string>
     <string name="error_mail_field">Error: mail format is incorrect.</string>
+    <string name="register_first_name_label">First Name</string>
+    <string name="register_last_name_label">Last Name</string>
+    <string name="register_phone_label">Phone number</string>
+    <string name="register_email_label">Email</string>
+    <string name="register_passwd_label">Password</string>
+    <string name="register_confirm_passwd_label">Confirm password</string>
 </resources>

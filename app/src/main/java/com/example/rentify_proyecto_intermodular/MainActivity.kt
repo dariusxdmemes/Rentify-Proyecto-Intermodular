@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
+import com.example.rentify_proyecto_intermodular.ui.register.RegisterScreen
 import com.example.rentify_proyecto_intermodular.ui.theme.RentifyProyectoIntermodularTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +21,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             RentifyProyectoIntermodularTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(
+//                    LoginScreen(
+//                        modifier = Modifier
+//                            .padding(innerPadding)
+//                            .background(MaterialTheme.colorScheme.primaryContainer)
+//                    )
+                    RegisterScreen(
                         modifier = Modifier
                             .padding(innerPadding)
                             .background(MaterialTheme.colorScheme.primaryContainer)
