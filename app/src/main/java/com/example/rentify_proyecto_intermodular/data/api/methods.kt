@@ -11,20 +11,12 @@ import java.io.IOException
  */
 //TODO sanitize email
 //TODO hash password
-fun validateLoginData(email: String, password: String): Int{
-    var returnCode = 0
-
+suspend fun validateLoginData(email: String, password: String): Int{
     try {
-        getUserByEmail(
-            email = email,
-            callBack = { user ->
-                if (user.id == 0) returnCode = 2
-                else {
-                    if (user.password != password) returnCode = 1
-                    else returnCode = 0
-                }
-            }
-        )
+        val user = getUserByEmail(email = email)
+        if (user.id == 0) return 2
+        if (user.password != password) return 1
+        return 0
     }
     catch (e: IOException){
         return 3
@@ -32,6 +24,4 @@ fun validateLoginData(email: String, password: String): Int{
     catch (e: Exception){
         return 4
     }
-
-    return returnCode
 }

@@ -2,6 +2,8 @@ package com.example.rentify_proyecto_intermodular.data.api
 
 import android.util.Log
 import com.example.rentify_proyecto_intermodular.data.model.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import okhttp3.Call
 import okhttp3.Callback
@@ -25,33 +27,37 @@ val client: OkHttpClient = OkHttpClient()
  * @return Returns a User object
  * @throws IOException
  */
-fun getUserByEmail(email: String, callBack: (User)->Unit) {
-    val encodedEmail = URLEncoder.encode(email, "UTF-8")
+suspend fun getUserByEmail(email: String): User {
+    return withContext(Dispatchers.IO){
+        var user = User(0, "", "")
 
-    val request = Request.Builder()
-        .url("http://$HOST:$PORT/filter/Users?email=$encodedEmail")
-        .build()
+        val encodedEmail = URLEncoder.encode(email, "UTF-8")
 
-    client.newCall(request).enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            throw IOException("Network Error")
-        }
+        val request = Request.Builder()
+            .url("http://$HOST:$PORT/filter/Users?email=$encodedEmail")
+            .build()
 
-        override fun onResponse(call: Call, response: Response) {
-            if (response.code == 404) callBack(User(0, "", ""))
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful){
+                throw IOException("Network Error")
+            }
 
             val body = response.body?.string()
             if (body == null) throw IOException("Response body is null")
             else {
                 val jsonArray = JSONArray(body)
-                val jsonObject = jsonArray.getJSONObject(0)
-                val user = User(
-                    id = jsonObject.getInt("id"),
-                    email = jsonObject.getString("email"),
-                    password = jsonObject.getString("password")
-                )
-                callBack(user)
+                if (jsonArray.length() == 0) user = User(0, "", "")
+                else {
+                    val jsonObject = jsonArray.getJSONObject(0)
+                    user = User(
+                        id = jsonObject.getInt("id"),
+                        email = jsonObject.getString("email"),
+                        password = jsonObject.getString("password")
+                    )
+                }
             }
         }
-    })
+
+        user
+    }
 }
