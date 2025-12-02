@@ -1,5 +1,6 @@
 package com.example.rentify_proyecto_intermodular.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,10 +42,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.getUserByEmail
 
 @Composable
 fun LoginScreen(modifier: Modifier) {
-
     val radioButtons = listOf(
         LoginOption(
             R.string.radio_owner_login
@@ -224,7 +225,7 @@ fun LoginScreen(modifier: Modifier) {
                         modifier = Modifier
                             .padding(5.dp),
                         onClick = {
-                            // Consulta a la bbdd y da acceso a la pantalla principal.
+                            // TODO Consulta a la bbdd y da acceso a la pantalla principal.
                         }
                     ) {
                         Text(
