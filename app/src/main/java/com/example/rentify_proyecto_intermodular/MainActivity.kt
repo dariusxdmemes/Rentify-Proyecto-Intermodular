@@ -28,14 +28,14 @@ class MainActivity : ComponentActivity() {
 //                    LoginScreen(
 //                        modifier = Modifier
 //                            .padding(innerPadding)
-//                            .background(MaterialTheme.colorScheme.primaryContainer)
+//                            .background(MaterialTheme.colorScheme.primaryContainer),
+//                        applicationContext = applicationContext,
+//                        coroutineScope = coroutineScope
 //                    )
                     RegisterScreen(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        applicationContext = applicationContext,
-                        coroutineScope = coroutineScope
+                            .background(MaterialTheme.colorScheme.primaryContainer)
                     )
                 }
             }
