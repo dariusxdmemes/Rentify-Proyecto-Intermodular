@@ -9,8 +9,11 @@ import java.io.IOException
  * @param password The user's password in plain text
  * @return Returns an status code. 0: login succesfull. 1: Incorrect password. 2: User not found. 3: Database error. 4: Unknown error
  */
-//TODO sanitize email
-//TODO hash password
+/*
+TODO
+    - sanitize email
+    - hash password
+ */
 suspend fun validateLoginData(email: String, password: String): Int {
     try {
         val user = getUserByEmail(email = email)

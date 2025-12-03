@@ -31,7 +31,7 @@ const val ADDRESS_FIELD = "direction"
 val client: OkHttpClient = OkHttpClient()
 
 /**
- * Asks the API for a user with the specified email. DOES NOT VALIDATE THE EMAIL STRING!!!
+ * Asks the API for a user with the specified email. DOES NOT VALIDATE THE EMAIL STRING NOR HASH THE PASSWORD!!!
  * @param email The email of the user to be requested
  * @return Returns a User object
  * @throws IOException
@@ -81,7 +81,10 @@ suspend fun getUserByEmail(email: String): User {
  * @param user The User object that needs to be inserted
  * @return Returns a status code. 0 = Succes; 1 = Failure; -1 = Method error; Ask William to implement more error codes on the API!!!
  */
-
+/*
+TODO
+    - Hash password
+ */
 suspend fun insertUser(user: User): Int {
     return withContext(Dispatchers.IO){
         var statusCode = -1
