@@ -1,11 +1,14 @@
 package com.example.rentify_proyecto_intermodular.ui.register
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,9 +27,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.insertUser
+import com.example.rentify_proyecto_intermodular.data.model.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
+/*
+TODO
+ - Add fields for NIF and Address
+ - Remove hard-coded values from the register-button onclick function
+ */
 
 @Composable
-fun RegisterScreen(modifier: Modifier) {
+fun RegisterScreen(modifier: Modifier, applicationContext: Context, coroutineScope: CoroutineScope) {
 
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
@@ -134,7 +147,36 @@ fun RegisterScreen(modifier: Modifier) {
                         )
                     }
 
-                    TODO() // IMPLEMENT REGISTER BUTTON
+                    Button(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = {
+                            coroutineScope.launch{
+                                val statusCode = insertUser(
+                                    User(
+                                        id = 0,
+                                        nif = "00000000A",
+                                        firstName = firstName,
+                                        lastName = lastName,
+                                        phoneNumber = phoneNumber,
+                                        email = email,
+                                        password = password,
+                                        addressId = 0
+                                    )
+                                )
+
+                                if (statusCode != 0){
+                                    Toast.makeText(applicationContext, "Register Succesful!", Toast.LENGTH_SHORT).show()
+                                }
+                                else {
+                                    Toast.makeText(applicationContext, "There was an error registering the user.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = "Register"
+                        )
+                    }
                 }
             }
         }

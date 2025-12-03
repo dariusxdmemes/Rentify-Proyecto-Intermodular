@@ -35,7 +35,9 @@ class MainActivity : ComponentActivity() {
                     RegisterScreen(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        applicationContext = applicationContext,
+                        coroutineScope = coroutineScope
                     )
                 }
             }
