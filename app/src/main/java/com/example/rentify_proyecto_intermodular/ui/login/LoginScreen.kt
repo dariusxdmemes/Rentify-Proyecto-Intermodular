@@ -46,7 +46,9 @@ import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.MainActivity
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.getUserByEmail
+import com.example.rentify_proyecto_intermodular.data.api.insertUser
 import com.example.rentify_proyecto_intermodular.data.api.validateLoginData
+import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

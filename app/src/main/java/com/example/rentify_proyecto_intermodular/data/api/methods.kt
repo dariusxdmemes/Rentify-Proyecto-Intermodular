@@ -11,7 +11,7 @@ import java.io.IOException
  */
 //TODO sanitize email
 //TODO hash password
-suspend fun validateLoginData(email: String, password: String): Int{
+suspend fun validateLoginData(email: String, password: String): Int {
     try {
         val user = getUserByEmail(email = email)
         if (user.id == 0) return 2
