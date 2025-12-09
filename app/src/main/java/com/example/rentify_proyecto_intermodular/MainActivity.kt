@@ -26,6 +26,8 @@ class MainActivity : ComponentActivity() {
             RentifyProyectoIntermodularTheme {
                 val coroutineScope = rememberCoroutineScope()
 
+
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    LoginScreen(
 //                        modifier = Modifier

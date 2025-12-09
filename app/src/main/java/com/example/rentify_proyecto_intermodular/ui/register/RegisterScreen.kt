@@ -89,7 +89,7 @@ fun RegisterScreen(modifier: Modifier) {
                 color = MaterialTheme.colorScheme.scrim
             )
             Text(
-                text = stringResource(R.string.app_slogan_register),
+                text = stringResource(R.string.home_tenant_slogan, ),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(bottom = 10.dp)
