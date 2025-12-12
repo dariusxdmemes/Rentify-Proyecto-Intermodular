@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.example.rentify_proyecto_intermodular.data.api.getUserByEmail
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
 import com.example.rentify_proyecto_intermodular.ui.register.RegisterScreen
@@ -28,24 +27,24 @@ class MainActivity : ComponentActivity() {
                 val coroutineScope = rememberCoroutineScope()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    LoginScreen(
-//                        modifier = Modifier
-//                            .padding(innerPadding)
-//                            .background(MaterialTheme.colorScheme.primaryContainer),
-//                        applicationContext = applicationContext,
-//                        coroutineScope = coroutineScope
-//                    )
+                    LoginScreen(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        applicationContext = applicationContext,
+                        coroutineScope = coroutineScope
+                    )
 //                    RegisterScreen(
 //                        modifier = Modifier
 //                            .padding(innerPadding)
 //                            .background(MaterialTheme.colorScheme.primaryContainer)
 //                            .verticalScroll(rememberScrollState())
 //                    )
-                    HomeOwnerScreen(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                    )
+//                    HomeOwnerScreen(
+//                        modifier = Modifier
+//                            .padding(innerPadding)
+//                            .background(MaterialTheme.colorScheme.primaryContainer)
+//                    )
                 }
             }
         }
