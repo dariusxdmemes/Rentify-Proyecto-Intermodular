@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -75,12 +76,14 @@ fun RegisterScreen(modifier: Modifier) {
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxWidth()
+            .padding(10.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Column(
-            verticalArrangement = Arrangement.Center,
+            //verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -89,7 +92,7 @@ fun RegisterScreen(modifier: Modifier) {
                 color = MaterialTheme.colorScheme.scrim
             )
             Text(
-                text = stringResource(R.string.home_tenant_slogan, ),
+                text = stringResource(R.string.app_slogan_register),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(bottom = 10.dp)
