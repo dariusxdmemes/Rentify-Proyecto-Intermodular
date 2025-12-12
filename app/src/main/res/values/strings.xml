@@ -16,5 +16,6 @@
     <string name="register_passwd_label">Password</string>
     <string name="register_confirm_passwd_label">Confirm password</string>
     <string name="register_button_text">Register</string>
+    <string name="home_tenant_slogan">Hello, %s</string>
     <string name="home_owner_slogan">Welcome %s</string>
 </resources>
