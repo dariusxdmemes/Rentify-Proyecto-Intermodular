@@ -35,17 +35,17 @@ class MainActivity : ComponentActivity() {
 //                        applicationContext = applicationContext,
 //                        coroutineScope = coroutineScope
 //                    )
-//                    RegisterScreen(
-//                        modifier = Modifier
-//                            .padding(innerPadding)
-//                            .background(MaterialTheme.colorScheme.primaryContainer)
-//                            .verticalScroll(rememberScrollState())
-//                    )
-                    HomeOwnerScreen(
+                    RegisterScreen(
                         modifier = Modifier
                             .padding(innerPadding)
                             .background(MaterialTheme.colorScheme.primaryContainer)
+                            .verticalScroll(rememberScrollState())
                     )
+//                    HomeOwnerScreen(
+//                        modifier = Modifier
+//                            .padding(innerPadding)
+//                            .background(MaterialTheme.colorScheme.primaryContainer)
+//                    )
                 }
             }
         }
