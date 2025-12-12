@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -16,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,42 +30,35 @@ import com.example.rentify_proyecto_intermodular.R
 @Composable
 fun RegisterScreen(modifier: Modifier) {
 
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-
     val registerFields = listOf(
         RegisterOption(
             stringResource(R.string.register_first_name_label),
-            firstName,
+            remember { mutableStateOf("") },
             KeyboardOptions(keyboardType = KeyboardType.Text)
         ),
         RegisterOption(
             stringResource(R.string.register_last_name_label),
-            lastName,
+            remember { mutableStateOf("") },
             KeyboardOptions(keyboardType = KeyboardType.Text)
         ),
         RegisterOption(
             stringResource(R.string.register_phone_label),
-            phoneNumber,
+            remember { mutableStateOf("") },
             KeyboardOptions(keyboardType = KeyboardType.Number)
         ),
         RegisterOption(
             stringResource(R.string.register_email_label),
-            email,
+            remember { mutableStateOf("") },
             KeyboardOptions(keyboardType = KeyboardType.Email)
         ),
         RegisterOption(
             stringResource(R.string.register_passwd_label),
-            password,
+            remember { mutableStateOf("") },
             KeyboardOptions(keyboardType = KeyboardType.Password)
         ),
         RegisterOption(
             stringResource(R.string.register_confirm_passwd_label),
-            confirmPassword,
+            remember { mutableStateOf("") },
             KeyboardOptions(keyboardType = KeyboardType.Password)
         )
 
@@ -122,9 +113,9 @@ fun RegisterScreen(modifier: Modifier) {
 
                                 cursorColor = MaterialTheme.colorScheme.scrim,
                             ),
-                            value = field.fieldValue,
+                            value = field.fieldState.value,
                             onValueChange = {
-                                field.fieldValue = it
+                                field.fieldState.value = it
                             },
                             label = {
                                 Text(
