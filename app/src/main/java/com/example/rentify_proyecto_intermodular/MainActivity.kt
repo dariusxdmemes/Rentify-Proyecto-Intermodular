@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.example.rentify_proyecto_intermodular.data.api.getUserByEmail
+import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
 import com.example.rentify_proyecto_intermodular.ui.register.RegisterScreen
 import com.example.rentify_proyecto_intermodular.ui.theme.RentifyProyectoIntermodularTheme
@@ -34,7 +35,13 @@ class MainActivity : ComponentActivity() {
 //                        applicationContext = applicationContext,
 //                        coroutineScope = coroutineScope
 //                    )
-                    RegisterScreen(
+//                    RegisterScreen(
+//                        modifier = Modifier
+//                            .padding(innerPadding)
+//                            .background(MaterialTheme.colorScheme.primaryContainer)
+//                            .verticalScroll(rememberScrollState())
+//                    )
+                    HomeOwnerScreen(
                         modifier = Modifier
                             .padding(innerPadding)
                             .background(MaterialTheme.colorScheme.primaryContainer)
