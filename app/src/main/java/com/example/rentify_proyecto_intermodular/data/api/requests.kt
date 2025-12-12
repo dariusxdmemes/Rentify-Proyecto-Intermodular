@@ -48,48 +48,55 @@ val client: OkHttpClient = OkHttpClient()
  */
 
 suspend fun login(email: String, password: String): User? {
-    return withContext(Dispatchers.IO){
-        var user: User? = null
+    try {
+        return withContext(Dispatchers.IO){
+            var user: User? = null
 
-        val jsonBody = """
-            {
-                "email": "$email",
-                "password": "$password"
-            }
-        """.trimIndent()
-        val requestBody = jsonBody.toRequestBody(jsonMediaType)
-
-        val request = Request.Builder()
-            .url("http://$HOST:$PORT/user")
-            .post(requestBody)
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful){
-                if (response.code == 400) {
-                    throw IOException("Missing field")
+            val jsonBody = """
+                {
+                    "email": "$email",
+                    "password": "$password"
                 }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
 
-                if (response.code == 401 || response.code == 404) {
-                    user = null // User not found
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/login")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful){
+                    if (response.code == 401) {
+                        user = null // invalid credentials
+                    }
+                    else if (response.code == 400) {
+                        throw IOException("Missing field")
+                    }
+                    else {
+                        throw IOException("Unexpected error")
+                    }
+
+                }
+                else {
+                    val body = response.body?.string() ?: throw IOException("Empty body")
+                    val jsonObject = JSONObject(body)
+
+                    user = User(
+                        jsonObject.getInt("id"),
+                        jsonObject.getString("first_name"),
+                        jsonObject.getString("last_name"),
+                        jsonObject.getString("phone_number"),
+                        jsonObject.getString("email"),
+                        ""
+                    )
                 }
             }
-            else {
-                val body = response.body?.string() ?: throw IOException("Empty body")
-                val jsonObject = JSONObject(body)
 
-                user = User(
-                    jsonObject.getInt(ID_FIELD),
-                    jsonObject.getString(FIRST_NAME_FIELD),
-                    jsonObject.getString(LAST_NAME_FIELD),
-                    jsonObject.getString(PHONE_NUMBER_FIELD),
-                    jsonObject.getString(EMAIL_FIELD),
-                    jsonObject.getString(PASSWORD_FIELD)
-                )
-            }
+            user
         }
-
-        user
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
     }
 }
 
@@ -102,41 +109,44 @@ suspend fun login(email: String, password: String): User? {
  */
 
 suspend fun registerUser(user: User): Int {
-    return withContext(Dispatchers.IO){
-        var code: Int = 2
+    try {
+        return withContext(Dispatchers.IO){
+            var code = 2
 
-        val jsonBody = """
-            {
-                "first_name": "${user.firstName}",
-                "last_name": "${user.lastName}",
-                "email": "${user.email}",
-                "phone_number": "${user.phoneNumber}"
-                "password": "${user.password}"
-            }
-        """.trimIndent()
-        val requestBody = jsonBody.toRequestBody(jsonMediaType)
-
-        val request = Request.Builder()
-            .url("http://$HOST:$PORT/register")
-            .post(requestBody)
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful){
-                if (response.code == 400) {
-                    code = 2
+            val jsonBody = """
+                {
+                    "first_name": "${user.firstName}",
+                    "last_name": "${user.lastName}",
+                    "email": "${user.email}",
+                    "phone_number": "${user.phoneNumber}",
+                    "password": "${user.password}"
                 }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
 
-                if (response.code == 401) {
-                    code = 1 // duplicated email
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/register")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful){
+                    if (response.code == 401) {
+                        code = 1 // duplicated email
+                    }
+                    else {
+                        code = 2 // generic error
+                    }
+                }
+                else {
+                    code = 0 // success
                 }
             }
-            else {
-                code = 0
-            }
+
+            code
         }
-
-        code
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
     }
 }
 

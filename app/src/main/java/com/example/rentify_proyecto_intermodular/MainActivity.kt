@@ -37,8 +37,9 @@ class MainActivity : ComponentActivity() {
 //                    RegisterScreen(
 //                        modifier = Modifier
 //                            .padding(innerPadding)
-//                            .background(MaterialTheme.colorScheme.primaryContainer)
-//                            .verticalScroll(rememberScrollState())
+//                            .background(MaterialTheme.colorScheme.primaryContainer),
+//                        applicationContext = applicationContext,
+//                        coroutineScope = coroutineScope
 //                    )
 //                    HomeOwnerScreen(
 //                        modifier = Modifier
