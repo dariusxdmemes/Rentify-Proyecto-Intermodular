@@ -1,5 +1,7 @@
 package com.example.rentify_proyecto_intermodular.ui.register
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,9 +30,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.registerUser
+import com.example.rentify_proyecto_intermodular.data.model.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(modifier: Modifier) {
+fun RegisterScreen(
+    modifier: Modifier,
+    applicationContext: Context,
+    coroutineScope: CoroutineScope
+) {
 
     val registerFields = listOf(
         RegisterOption(
@@ -138,7 +148,33 @@ fun RegisterScreen(modifier: Modifier) {
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Button(
-                            onClick = { /* insert new user into db && move to login screen */ },
+                            onClick = {
+                                if (registerFields[4].fieldState.value != registerFields[5].fieldState.value) // check if both password fields match
+                                    Toast.makeText(applicationContext, "Passwords don't match", Toast.LENGTH_LONG).show()
+                                else
+                                    coroutineScope.launch{
+                                        try {
+                                            val statusCode = registerUser(
+                                                user = User(
+                                                    0,
+                                                    registerFields[0].fieldState.value,
+                                                    registerFields[1].fieldState.value,
+                                                    registerFields[2].fieldState.value,
+                                                    registerFields[3].fieldState.value,
+                                                    registerFields[4].fieldState.value
+                                                )
+                                            )
+
+                                            when (statusCode) {
+                                                0 -> Toast.makeText(applicationContext, "Register successful!", Toast.LENGTH_LONG).show()
+                                                1 -> Toast.makeText(applicationContext, "An account with that email already exists", Toast.LENGTH_LONG).show()
+                                                2 -> Toast.makeText(applicationContext, "Unexpected error. Try again later.", Toast.LENGTH_LONG).show()
+                                            }
+                                        } catch (e: Exception) {
+                                            Toast.makeText(applicationContext, "Unexpected error. Try again later.", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                            },
                             modifier = Modifier
                                 .padding(16.dp),
                             colors = ButtonDefaults.buttonColors(

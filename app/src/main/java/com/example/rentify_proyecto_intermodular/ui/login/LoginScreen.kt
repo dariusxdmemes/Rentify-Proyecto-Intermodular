@@ -45,15 +45,18 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.MainActivity
 import com.example.rentify_proyecto_intermodular.R
-import com.example.rentify_proyecto_intermodular.data.api.getUserByEmail
-import com.example.rentify_proyecto_intermodular.data.api.insertUser
-import com.example.rentify_proyecto_intermodular.data.api.validateLoginData
+import com.example.rentify_proyecto_intermodular.data.api.login
 import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 @Composable
-fun LoginScreen(modifier: Modifier, applicationContext: Context, coroutineScope: CoroutineScope) {
+fun LoginScreen(
+    modifier: Modifier,
+    applicationContext: Context,
+    coroutineScope: CoroutineScope
+) {
     val radioButtons = listOf(
         LoginOption(
             R.string.radio_owner_login
@@ -234,13 +237,16 @@ fun LoginScreen(modifier: Modifier, applicationContext: Context, coroutineScope:
                             .padding(5.dp),
                         onClick = {
                             coroutineScope.launch {
-                                val statusCode = validateLoginData(email, password)
-                                when(statusCode){
-                                    0 -> Toast.makeText(applicationContext, "Login succesful!", Toast.LENGTH_SHORT).show()
-                                    1 -> Toast.makeText(applicationContext, "Incorrect email or password", Toast.LENGTH_SHORT).show()
-                                    2 -> Toast.makeText(applicationContext, "Incorrect email or password", Toast.LENGTH_SHORT).show()
-                                    3 -> Toast.makeText(applicationContext, "Database error", Toast.LENGTH_SHORT).show()
-                                    else -> Toast.makeText(applicationContext, "Unknown error", Toast.LENGTH_SHORT).show()
+                                try {
+                                    val user = login(email, password)
+                                    if (user == null){
+                                        Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
+                                    }
+                                    else {
+                                        Toast.makeText(applicationContext, "Login Successful!", Toast.LENGTH_LONG).show()
+                                    }
+                                } catch (e: IOException) {
+                                    Toast.makeText(applicationContext, "An Unexpected Error Ocurred. Try again.", Toast.LENGTH_LONG).show()
                                 }
                             }
                         }
