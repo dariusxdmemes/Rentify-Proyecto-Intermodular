@@ -34,7 +34,6 @@ import com.example.rentify_proyecto_intermodular.data.api.registerUser
 import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
 @Composable
 fun RegisterScreen(
     modifier: Modifier,
@@ -164,16 +163,14 @@ fun RegisterScreen(
                                                     registerFields[4].fieldState.value
                                                 )
                                             )
+                                            Toast.makeText(applicationContext, statusCode, Toast.LENGTH_LONG).show()
 
-                                            when (statusCode) {
-                                                0 -> Toast.makeText(applicationContext, "Register successful!", Toast.LENGTH_LONG).show()
-                                                1 -> Toast.makeText(applicationContext, "An account with that email already exists", Toast.LENGTH_LONG).show()
-                                                2 -> Toast.makeText(applicationContext, "Unexpected error. Try again later.", Toast.LENGTH_LONG).show()
-                                            }
+
                                         } catch (e: Exception) {
                                             Toast.makeText(applicationContext, "Unexpected error. Try again later.", Toast.LENGTH_LONG).show()
                                         }
                                     }
+
                             },
                             modifier = Modifier
                                 .padding(16.dp),
