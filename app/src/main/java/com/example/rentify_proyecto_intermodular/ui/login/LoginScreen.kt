@@ -44,6 +44,7 @@ import com.example.rentify_proyecto_intermodular.data.api.validateTenant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 
@@ -227,26 +228,19 @@ fun LoginScreen(modifier: Modifier, applicationContext: Context, coroutineScope:
                     Button(
                         modifier = Modifier.padding(5.dp),
                         onClick = {
-                            coroutineScope.launch(Dispatchers.IO) {
+                            coroutineScope.launch {
                                 try {
                                     val user = login(email, password)
+
                                     if (user == null){
                                         Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
                                     }
                                     else {
-                                        Toast.makeText(applicationContext, "Login Successful!", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(applicationContext, "Login Successful ${user.firstName}!", Toast.LENGTH_LONG).show()
                                     }
-
                                 } catch (e: IOException) {
                                     Toast.makeText(applicationContext, "An Unexpected Error Ocurred. Try again.", Toast.LENGTH_LONG).show()
                                 }
-
-
-                                //variables preparadas para informar del tipo de usuario
-//                                val isOwner = validateOwner(user)
-//                                val isTenant = validateTenant(user)
-
-
                             }
                         }
                     ) {

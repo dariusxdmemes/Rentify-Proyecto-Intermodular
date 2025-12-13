@@ -27,20 +27,20 @@ class MainActivity : ComponentActivity() {
                 val coroutineScope = rememberCoroutineScope()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    LoginScreen(
-//                        modifier = Modifier
-//                            .padding(innerPadding)
-//                            .background(MaterialTheme.colorScheme.primaryContainer),
-//                        applicationContext = applicationContext,
-//                        coroutineScope = coroutineScope
-//                    )
-                    RegisterScreen(
+                    LoginScreen(
                         modifier = Modifier
                             .padding(innerPadding)
                             .background(MaterialTheme.colorScheme.primaryContainer),
                         applicationContext = applicationContext,
                         coroutineScope = coroutineScope
                     )
+//                    RegisterScreen(
+//                        modifier = Modifier
+//                            .padding(innerPadding)
+//                            .background(MaterialTheme.colorScheme.primaryContainer),
+//                        applicationContext = applicationContext,
+//                        coroutineScope = coroutineScope
+//                    )
 //                    HomeOwnerScreen(
 //                        modifier = Modifier
 //                            .padding(innerPadding)

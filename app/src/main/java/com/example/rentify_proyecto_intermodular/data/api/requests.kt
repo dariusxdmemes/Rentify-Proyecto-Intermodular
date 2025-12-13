@@ -50,53 +50,56 @@ val client: OkHttpClient = OkHttpClient()
  */
 
 suspend fun login(email: String, password: String): User? {
-    return withContext(Dispatchers.IO){
+    try {
+        return withContext(Dispatchers.IO) {
+            var user: User? = null
 
-
-        val request = Request.Builder()
-            .url("http://$HOST:$PORT/login?email=$email&password=$password")
-            .get()
-            .build()
-
-        var user: User? = null
-        client.newCall(request).execute().use { response ->
-            val responseBody = response.body?.string()
-
-            if (response.isSuccessful && responseBody != null) {
-                val jsonObject = JSONObject(responseBody)
-                user = User(
-                    jsonObject.getInt("id_user"),
-                    jsonObject.getString("name"),
-                    jsonObject.getString("surname"),
-                    jsonObject.getString("telephone"),
-                    jsonObject.getString("email"),
-                    jsonObject.getString("password")
-                )
-
-                withContext(Dispatchers.Main) {
-                    //faltaria determinar el tipo de usuario y redirigir a la pantalla correspondiente
-                    Log.d("LoginSuccess", "User: ${user?.firstName}")
+            val jsonBody = """
+                {
+                    "email": "$email",
+                    "password": "$password"
                 }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
 
-            } else {
-                withContext(Dispatchers.Main) {
-                    val errorMessage = when(response.code) {
-                        401, 404 -> "Email o contraseña incorrectos"
-                        400 -> "Faltan campos"
-                        else -> "Error de conexión: ${response.message}"
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/login")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string() ?: throw IOException("Empty body")
+                    val jsonObject = JSONObject(body)
+
+                    user = User(
+                        jsonObject.getInt("id_user"),
+                        jsonObject.getString("name"),
+                        jsonObject.getString("surname"),
+                        jsonObject.getString("telephone"),
+                        jsonObject.getString("email"),
+                        ""
+                    )
+
+                } else {
+                    if (response.code == 401) {
+                        user = null
+                    } else if (response.code == 400) {
+                        user = null
                     }
-                    Log.e("LoginError", "Error: $errorMessage, Body: $responseBody")
                 }
             }
+            user
         }
-        user
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
     }
 }
 
 suspend fun validateOwner(user: User?): Boolean {
     return withContext(Dispatchers.IO) {
         val request = Request.Builder()
-            .url("http://10.0.2.2:8000/owners?user_fk=${user?.id}")
+            .url("http://$HOST:$PORT/owners?user_fk=${user?.id}")
             .get()
             .build()
 
@@ -121,7 +124,7 @@ suspend fun validateOwner(user: User?): Boolean {
 suspend fun validateTenant(user: User?): Boolean {
     return withContext(Dispatchers.IO) {
         val request = Request.Builder()
-            .url("http://10.0.2.2:8000/renters?user_fk=${user?.id}")
+            .url("http://$HOST:$PORT/renters?user_fk=${user?.id}")
             .get()
             .build()
 
