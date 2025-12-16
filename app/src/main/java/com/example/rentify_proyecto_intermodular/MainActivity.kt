@@ -13,6 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
 import com.example.rentify_proyecto_intermodular.ui.register.RegisterScreen
@@ -25,27 +28,43 @@ class MainActivity : ComponentActivity() {
         setContent {
             RentifyProyectoIntermodularTheme {
                 val coroutineScope = rememberCoroutineScope()
+                val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        applicationContext = applicationContext,
-                        coroutineScope = coroutineScope
-                    )
-//                    RegisterScreen(
-//                        modifier = Modifier
-//                            .padding(innerPadding)
-//                            .background(MaterialTheme.colorScheme.primaryContainer),
-//                        applicationContext = applicationContext,
-//                        coroutineScope = coroutineScope
-//                    )
-//                    HomeOwnerScreen(
-//                        modifier = Modifier
-//                            .padding(innerPadding)
-//                            .background(MaterialTheme.colorScheme.primaryContainer)
-//                    )
+                    NavHost(
+                        navController = navController,
+                        startDestination = "Login"
+                    ) {
+                        composable ("Login") {
+                            LoginScreen(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                applicationContext = applicationContext,
+                                coroutineScope = coroutineScope,
+                                navController = navController
+                            )
+                        }
+
+                        composable ("Register") {
+                            RegisterScreen(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                applicationContext = applicationContext,
+                                coroutineScope = coroutineScope,
+                                navController = navController
+                            )
+                        }
+
+                        composable ("HomeOwner") {
+                            HomeOwnerScreen(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                            )
+                        }
+                    }
                 }
             }
         }

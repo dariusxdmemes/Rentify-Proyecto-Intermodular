@@ -29,18 +29,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.registerUser
 import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier,
     applicationContext: Context,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    navController: NavHostController
 ) {
+    val loginRoute = stringResource(R.string.navigation_login)
 
     val registerFields = listOf(
         RegisterOption(
@@ -166,7 +170,11 @@ fun RegisterScreen(
                                             )
 
                                             when (statusCode) {
-                                                0 -> Toast.makeText(applicationContext, "Register successful!", Toast.LENGTH_LONG).show()
+                                                0 -> {
+                                                    Toast.makeText(applicationContext, "Register successful!", Toast.LENGTH_LONG).show()
+                                                    delay(1000)
+                                                    navController.navigate(loginRoute)
+                                                }
                                                 1 -> Toast.makeText(applicationContext, "An account with that email already exists", Toast.LENGTH_LONG).show()
                                                 2 -> Toast.makeText(applicationContext, "Unexpected error. Try again later.", Toast.LENGTH_LONG).show()
                                             }
