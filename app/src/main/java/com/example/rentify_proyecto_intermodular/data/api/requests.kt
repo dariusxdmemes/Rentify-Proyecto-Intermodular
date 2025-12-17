@@ -47,7 +47,7 @@ val client: OkHttpClient = OkHttpClient()
  * @throws IOException Throws `IOException` in case of network error
  */
 
-suspend fun login(email: String, password: String): User? {
+suspend fun login(email: String, password: String, type: String): User? {
     try {
         return withContext(Dispatchers.IO){
             var user: User? = null
@@ -55,7 +55,8 @@ suspend fun login(email: String, password: String): User? {
             val jsonBody = """
                 {
                     "email": "$email",
-                    "password": "$password"
+                    "password": "$password",
+                    "type": "$type"
                 }
             """.trimIndent()
             val requestBody = jsonBody.toRequestBody(jsonMediaType)
@@ -82,14 +83,51 @@ suspend fun login(email: String, password: String): User? {
                     val body = response.body?.string() ?: throw IOException("Empty body")
                     val jsonObject = JSONObject(body)
 
-                    user = User(
-                        jsonObject.getInt("id"),
-                        jsonObject.getString("first_name"),
-                        jsonObject.getString("last_name"),
-                        jsonObject.getString("phone_number"),
-                        jsonObject.getString("email"),
-                        ""
-                    )
+                    if(type=="owner"){
+
+                        val ownedProperties =
+                            if (jsonObject.has("ownedProperty") && !jsonObject.isNull("ownedProperty")) {
+                                jsonObject.getJSONArray("ownedProperty")
+                            } else {
+                                null
+                            }
+
+                        user = User(
+                            jsonObject.getInt("id"),
+                            jsonObject.getString("first_name"),
+                            jsonObject.getString("last_name"),
+                            jsonObject.getString("phone_number"),
+                            jsonObject.getString("email"),
+                            "",
+                            ownedProperties,
+                            null
+                        )
+                    }
+                    else if(type=="tenant"){
+
+                        val leasedProperty =
+                            if (jsonObject.has("leasedProperty") && !jsonObject.isNull("leasedProperty")) {
+                                jsonObject.getJSONObject("leasedProperty")
+                            } else {
+                                null
+                            }
+
+                        user = User(
+                            jsonObject.getInt("id"),
+                            jsonObject.getString("first_name"),
+                            jsonObject.getString("last_name"),
+                            jsonObject.getString("phone_number"),
+                            jsonObject.getString("email"),
+                            "",
+                            null,
+                            leasedProperty
+                        )
+                    }
+                    if(user != null && user.ownedProperty == null && user.leasedProperty == null){
+                        //not owner or tenant
+                        user = null
+                    }
+
                 }
             }
 

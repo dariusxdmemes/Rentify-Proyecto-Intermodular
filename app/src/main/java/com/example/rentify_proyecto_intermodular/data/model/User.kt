@@ -1,5 +1,8 @@
 package com.example.rentify_proyecto_intermodular.data.model
 
+import org.json.JSONArray
+import org.json.JSONObject
+
 data class User (
     val id: Int,
     val firstName: String,
@@ -7,4 +10,6 @@ data class User (
     val phoneNumber: String,
     val email: String,
     val password: String,
+    val ownedProperty: JSONArray? = null,
+    val leasedProperty: JSONObject? = null,
 )

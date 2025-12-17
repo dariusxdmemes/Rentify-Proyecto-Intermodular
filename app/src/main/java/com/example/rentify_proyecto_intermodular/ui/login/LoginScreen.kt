@@ -236,20 +236,24 @@ fun LoginScreen(
                         onClick = {
                             coroutineScope.launch {
                                 try {
-                                    val user = login(email, password)
-                                    if (user == null){
-                                        Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
-                                    }
-                                    else {
-                                        // Login succesfull
-                                        if (selectedOption.text == R.string.radio_owner_login){
+                                    if (selectedOption.text == R.string.radio_owner_login){
+                                        val user = login(email, password, "owner")
+                                        if (user == null){
+                                            Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
+                                        }else{
                                             navController.navigate(homeOwnerRoute)
                                         }
-                                        else if (selectedOption.text == R.string.radio_tenant_login) {
+                                    }
+                                    else if (selectedOption.text == R.string.radio_tenant_login) {
+                                        val user = login(email, password, "tenant")
+                                        if (user == null){
+                                            Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
+                                        }else{
                                             /*TODO PABLO implement navigation to tenant's home*/
                                             Toast.makeText(applicationContext, "Tenant login yet to be implemented", Toast.LENGTH_LONG).show()
                                         }
                                     }
+
                                 } catch (e: IOException) {
                                     Toast.makeText(applicationContext, "An Unexpected Error Ocurred. Try again.", Toast.LENGTH_LONG).show()
                                 }
