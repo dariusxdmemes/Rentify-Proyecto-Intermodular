@@ -74,8 +74,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .padding(innerPadding)
                                     .background(MaterialTheme.colorScheme.primaryContainer),
-                                actualUser = actualUser,
-                                onUserChange  = { actualUser = it }
+                                actualUser = actualUser
                             )
                         }
                     }

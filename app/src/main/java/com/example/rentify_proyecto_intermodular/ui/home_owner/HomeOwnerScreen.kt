@@ -35,8 +35,7 @@ import com.example.rentify_proyecto_intermodular.data.model.User
 @Composable
 fun HomeOwnerScreen(
     modifier: Modifier,
-    actualUser: User?,
-    onUserChange: (User?) -> Unit
+    actualUser: User?
 ) {
     val user = actualUser
 
