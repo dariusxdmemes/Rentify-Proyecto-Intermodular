@@ -10,11 +10,12 @@ package com.example.rentify_proyecto_intermodular.data.model
 //)
 
 //adaptacion a los headers de la base de datos que devuelve actualmente
-data class Property (
+data class Property(
     val id: Int,
-    val address: Address,
-    val ownerFK: Int,
+    val address: String,
+    val owner_fk: Int,
     val ciudad: String,
     val pais: String,
-    val alquiler: Int,
+    val alquiler: Int
 )
+

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.login
+import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -49,7 +50,9 @@ fun LoginScreen(
     modifier: Modifier,
     applicationContext: Context,
     coroutineScope: CoroutineScope,
-    navController: NavHostController
+    navController: NavHostController,
+    actualUser: User?,
+    onUserChange: (User?) -> Unit
 ) {
     val radioButtons = listOf(
         LoginOption(
@@ -241,6 +244,7 @@ fun LoginScreen(
                                         if (user == null){
                                             Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
                                         }else{
+                                            onUserChange(user)
                                             navController.navigate(homeOwnerRoute)
                                         }
                                     }
@@ -249,6 +253,7 @@ fun LoginScreen(
                                         if (user == null){
                                             Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
                                         }else{
+                                            onUserChange(user)
                                             /*TODO PABLO implement navigation to tenant's home*/
                                             Toast.makeText(applicationContext, "Tenant login yet to be implemented", Toast.LENGTH_LONG).show()
                                         }

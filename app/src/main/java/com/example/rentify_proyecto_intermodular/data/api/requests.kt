@@ -1,5 +1,6 @@
 package com.example.rentify_proyecto_intermodular.data.api
 
+import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -85,12 +86,21 @@ suspend fun login(email: String, password: String, type: String): User? {
 
                     if(type=="owner"){
 
-                        val ownedProperties =
+                        val ownedProperties: List<Property>? =
                             if (jsonObject.has("ownedProperty") && !jsonObject.isNull("ownedProperty")) {
-                                jsonObject.getJSONArray("ownedProperty")
-                            } else {
-                                null
+                            val jsonArray = jsonObject.getJSONArray("ownedProperty")
+                            List(jsonArray.length()) { i ->
+                                val propJson = jsonArray.getJSONObject(i)
+                                Property(
+                                    id = propJson.getInt("id"),
+                                    address = propJson.getString("address"),
+                                    owner_fk = propJson.getInt("owner_fk"),
+                                    ciudad = propJson.getString("ciudad"),
+                                    pais = propJson.getString("pais"),
+                                    alquiler = propJson.getInt("alquiler")
+                                )
                             }
+                        } else null
 
                         user = User(
                             jsonObject.getInt("id"),
@@ -105,12 +115,18 @@ suspend fun login(email: String, password: String, type: String): User? {
                     }
                     else if(type=="tenant"){
 
-                        val leasedProperty =
+                        val leasedProperty: Property? =
                             if (jsonObject.has("leasedProperty") && !jsonObject.isNull("leasedProperty")) {
-                                jsonObject.getJSONObject("leasedProperty")
-                            } else {
-                                null
-                            }
+                            val propJson = jsonObject.getJSONObject("leasedProperty")
+                            Property(
+                                id = propJson.getInt("id"),
+                                address = propJson.getString("address"),
+                                owner_fk = propJson.getInt("owner_fk"),
+                                ciudad = propJson.getString("ciudad"),
+                                pais = propJson.getString("pais"),
+                                alquiler = propJson.getInt("alquiler")
+                            )
+                        } else null
 
                         user = User(
                             jsonObject.getInt("id"),

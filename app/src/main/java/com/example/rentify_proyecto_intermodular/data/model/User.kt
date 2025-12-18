@@ -10,6 +10,6 @@ data class User (
     val phoneNumber: String,
     val email: String,
     val password: String,
-    val ownedProperty: JSONArray? = null,
-    val leasedProperty: JSONObject? = null,
+    val ownedProperty: List<Property>? = null,
+    val leasedProperty: Property? = null,
 )
