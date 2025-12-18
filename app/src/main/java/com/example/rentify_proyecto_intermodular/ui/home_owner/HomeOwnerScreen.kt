@@ -83,19 +83,25 @@ fun HomeOwnerScreen(
                                 .padding(start = 5.dp)
                                 .scale(2f)
                         )
-                        Column(modifier = Modifier.padding(10.dp)) {
+                        Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
                             Text(text = property.address)
                             Text(text = "${property.ciudad}, ${property.pais}")
 
-                            IconButton(onClick = { expanded = !expanded }) {
-                                Icon(
-                                    imageVector = if (expanded)
-                                        Icons.Default.KeyboardArrowDown
-                                    else
-                                        Icons.Default.KeyboardArrowUp,
-                                    contentDescription = null
-                                )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                IconButton(onClick = { expanded = !expanded }) {
+                                    Icon(
+                                        imageVector = if (expanded)
+                                            Icons.Default.KeyboardArrowUp
+                                        else
+                                            Icons.Default.KeyboardArrowDown,
+                                        contentDescription = null
+                                    )
+                                }
                             }
+
 
                             AnimatedVisibility(visible = expanded) {
                                 Column(
