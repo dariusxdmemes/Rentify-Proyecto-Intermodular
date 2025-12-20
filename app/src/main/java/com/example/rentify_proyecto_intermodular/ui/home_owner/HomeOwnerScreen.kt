@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
+import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
+import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
 
 @Composable
@@ -64,6 +68,16 @@ fun HomeOwnerScreen(
         ) {
             items(user?.ownedProperty ?: emptyList()) { property ->
                 var expanded by remember { mutableStateOf(false) }
+
+                var tenants by remember { mutableStateOf<List<User>>(emptyList()) }
+                var services by remember { mutableStateOf<Service?>(null) }
+                var isLoading by remember { mutableStateOf(true) }
+
+                LaunchedEffect(property.id) {
+                    tenants = getTenantsByProperty(property.id)
+                    services = getServicesByProperty(property.id)
+                    isLoading = false
+                }
 
                 Card(
                     modifier = Modifier
@@ -101,17 +115,27 @@ fun HomeOwnerScreen(
                                 }
                             }
 
-
                             AnimatedVisibility(visible = expanded) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 12.dp)
                                 ) {
-                                    Text(text = "Inquilino: placeholder")
-                                    Text(text = "Precio/mes: ${property.alquiler}")
-                                    Text(text = "Servicios: placeholder")
-                                    Text(text = "No incluye: placeholder")
+                                    if (isLoading) {
+                                        Text(text = "Cargando datos...")
+                                    } else {
+                                        if (tenants.isEmpty()) {
+                                            Text(text = "Inquilino: Sin inquilinos")
+                                        } else {
+                                            tenants.forEach { tenant ->
+                                                Text(text = "Inquilino: ${tenant.firstName} ${tenant.lastName}")
+                                            }
+                                        }
+
+                                        Text(text = "Precio/mes: ${property.alquiler}")
+                                        Text(text = "Servicios: ${services?.included ?: "No disponible"}")
+                                        Text(text = "No incluye: ${services?.excluded ?: "No disponible"}")
+                                    }
                                 }
                             }
                         }
@@ -120,6 +144,5 @@ fun HomeOwnerScreen(
             }
         }
 
-//        }
     }
 }
