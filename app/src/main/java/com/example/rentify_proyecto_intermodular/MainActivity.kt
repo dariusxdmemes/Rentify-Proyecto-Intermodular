@@ -11,11 +11,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
 import com.example.rentify_proyecto_intermodular.ui.register.RegisterScreen
@@ -30,7 +36,11 @@ class MainActivity : ComponentActivity() {
                 val coroutineScope = rememberCoroutineScope()
                 val navController = rememberNavController()
 
+                var actualUser by rememberSaveable { mutableStateOf<User?>(null) }
+
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+
                     NavHost(
                         navController = navController,
                         startDestination = "Login"
@@ -42,7 +52,9 @@ class MainActivity : ComponentActivity() {
                                     .background(MaterialTheme.colorScheme.primaryContainer),
                                 applicationContext = applicationContext,
                                 coroutineScope = coroutineScope,
-                                navController = navController
+                                navController = navController,
+                                actualUser = actualUser,
+                                onUserChange  = { actualUser = it }
                             )
                         }
 
@@ -61,7 +73,8 @@ class MainActivity : ComponentActivity() {
                             HomeOwnerScreen(
                                 modifier = Modifier
                                     .padding(innerPadding)
-                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                actualUser = actualUser
                             )
                         }
                     }

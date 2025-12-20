@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.login
+import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -49,7 +50,9 @@ fun LoginScreen(
     modifier: Modifier,
     applicationContext: Context,
     coroutineScope: CoroutineScope,
-    navController: NavHostController
+    navController: NavHostController,
+    actualUser: User?,
+    onUserChange: (User?) -> Unit
 ) {
     val radioButtons = listOf(
         LoginOption(
@@ -236,20 +239,26 @@ fun LoginScreen(
                         onClick = {
                             coroutineScope.launch {
                                 try {
-                                    val user = login(email, password)
-                                    if (user == null){
-                                        Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
-                                    }
-                                    else {
-                                        // Login succesfull
-                                        if (selectedOption.text == R.string.radio_owner_login){
+                                    if (selectedOption.text == R.string.radio_owner_login){
+                                        val user = login(email, password, "owner")
+                                        if (user == null){
+                                            Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
+                                        }else{
+                                            onUserChange(user)
                                             navController.navigate(homeOwnerRoute)
                                         }
-                                        else if (selectedOption.text == R.string.radio_tenant_login) {
+                                    }
+                                    else if (selectedOption.text == R.string.radio_tenant_login) {
+                                        val user = login(email, password, "tenant")
+                                        if (user == null){
+                                            Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
+                                        }else{
+                                            onUserChange(user)
                                             /*TODO PABLO implement navigation to tenant's home*/
                                             Toast.makeText(applicationContext, "Tenant login yet to be implemented", Toast.LENGTH_LONG).show()
                                         }
                                     }
+
                                 } catch (e: IOException) {
                                     Toast.makeText(applicationContext, "An Unexpected Error Ocurred. Try again.", Toast.LENGTH_LONG).show()
                                 }
@@ -279,3 +288,22 @@ fun LoginScreen(
     }
 
 }
+
+
+/*
+ * owner example:
+ * - id: 100 (INTEGER)
+ * - first_name: ownertest (TEXT)
+ * - last_name: test (TEXT)
+ * - email: ownertest@example.com (TEXT)
+ * - password: test (TEXT)
+ * - phone_number: 1111111111 (TEXT)
+ *
+ * tenant example:
+ * - id: 101 (INTEGER)
+ * - first_name: tenanttest (TEXT)
+ * - last_name: test (TEXT)
+ * - email: tenanttest@example.com (TEXT)
+ * - password: test (TEXT)
+ * - phone_number: 1111111111 (TEXT)
+ */
