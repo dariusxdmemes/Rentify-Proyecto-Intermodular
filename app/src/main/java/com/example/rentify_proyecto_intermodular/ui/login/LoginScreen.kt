@@ -288,3 +288,22 @@ fun LoginScreen(
     }
 
 }
+
+
+/*
+ * owner example:
+ * - id: 100 (INTEGER)
+ * - first_name: ownertest (TEXT)
+ * - last_name: test (TEXT)
+ * - email: ownertest@example.com (TEXT)
+ * - password: test (TEXT)
+ * - phone_number: 1111111111 (TEXT)
+ *
+ * tenant example:
+ * - id: 101 (INTEGER)
+ * - first_name: tenanttest (TEXT)
+ * - last_name: test (TEXT)
+ * - email: tenanttest@example.com (TEXT)
+ * - password: test (TEXT)
+ * - phone_number: 1111111111 (TEXT)
+ */
