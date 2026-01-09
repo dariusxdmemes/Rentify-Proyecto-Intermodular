@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -17,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +31,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
+import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
+import com.example.rentify_proyecto_intermodular.data.model.Service
+import com.example.rentify_proyecto_intermodular.data.model.User
 
 @Composable
-fun HomeOwnerScreen(modifier: Modifier) {
-
-    val user = "Prueba" //TODO  String de prueba para el formato del "slogan".
-    var expanded by remember { mutableStateOf(false) }
+fun HomeOwnerScreen(
+    modifier: Modifier,
+    actualUser: User?
+) {
+    val user = actualUser
 
     Column(
         modifier = modifier
@@ -48,78 +56,93 @@ fun HomeOwnerScreen(modifier: Modifier) {
             color = MaterialTheme.colorScheme.scrim
         )
         Text(
-            text = stringResource(R.string.home_owner_slogan, user),
+            text = stringResource(R.string.home_owner_slogan, user?.firstName.toString()),
             style = MaterialTheme.typography.titleMedium
         )
-        Column(
+
+        LazyColumn(
             modifier = Modifier
                 .padding(20.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Row(
+            items(user?.ownedProperty ?: emptyList()) { property ->
+                var expanded by remember { mutableStateOf(false) }
+
+                var tenants by remember { mutableStateOf<List<User>>(emptyList()) }
+                var services by remember { mutableStateOf<Service?>(null) }
+                var isLoading by remember { mutableStateOf(true) }
+
+                LaunchedEffect(property.id) {
+                    tenants = getTenantsByProperty(property.id)
+                    services = getServicesByProperty(property.id)
+                    isLoading = false
+                }
+
+                Card(
                     modifier = Modifier
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(30.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 5.dp)
-                            .scale(2f)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .padding(10.dp)
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(30.dp)
                     ) {
-                        Text(
-                            text = "Calle del olivo, 76, 3ºB"
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(start = 5.dp)
+                                .scale(2f)
                         )
-                        Text(
-                            text = "Sevilla, Andalucia"
-                        )
-                        IconButton(
-                            onClick = {
-                                expanded = !expanded
-                            }
-                        ) {
-                            Icon(
-                                imageVector = if (expanded)
-                                    Icons.Default.KeyboardArrowDown
-                                else
-                                    Icons.Default.KeyboardArrowUp,
-                                contentDescription = null
-                            )
-                        }
-                        AnimatedVisibility(visible = expanded) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp)
+                        Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+                            Text(text = property.address)
+                            Text(text = "${property.ciudad}, ${property.pais}")
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
                             ) {
-                                Text(
-                                    text = "Inquilino: placeholder"
-                                )
-                                Text(
-                                    text = "Precio/mes: placeholder"
-                                )
-                                Text(
-                                    text = "Servicios: placeholder"
-                                )
-                                Text(
-                                    text = "No incluye: placeholder"
-                                )
+                                IconButton(onClick = { expanded = !expanded }) {
+                                    Icon(
+                                        imageVector = if (expanded)
+                                            Icons.Default.KeyboardArrowUp
+                                        else
+                                            Icons.Default.KeyboardArrowDown,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+
+                            AnimatedVisibility(visible = expanded) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp)
+                                ) {
+                                    if (isLoading) {
+                                        Text(text = "Cargando datos...")
+                                    } else {
+                                        if (tenants.isEmpty()) {
+                                            Text(text = "Inquilino: Sin inquilinos")
+                                        } else {
+                                            tenants.forEach { tenant ->
+                                                Text(text = "Inquilino: ${tenant.firstName} ${tenant.lastName}")
+                                            }
+                                        }
+
+                                        Text(text = "Precio/mes: ${property.alquiler}")
+                                        Text(text = "Servicios: ${services?.included ?: "No disponible"}")
+                                        Text(text = "No incluye: ${services?.excluded ?: "No disponible"}")
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
     }
 }

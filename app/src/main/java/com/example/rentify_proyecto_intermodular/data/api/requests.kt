@@ -1,5 +1,7 @@
 package com.example.rentify_proyecto_intermodular.data.api
 
+import com.example.rentify_proyecto_intermodular.data.model.Property
+import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,11 +45,12 @@ val client: OkHttpClient = OkHttpClient()
  * Checks the credentials against the API
  * @param email The user's email
  * @param password The user's password in plaintext
- * @return Returns the information of the user on successful login, and `null` on incorrect credentials.
+ * @param type The user's type, either "owner" o "tenant"
+ * @return Returns the User object on successful login, and `null` on incorrect credentials.
  * @throws IOException Throws `IOException` in case of network error
  */
 
-suspend fun login(email: String, password: String): User? {
+suspend fun login(email: String, password: String, type: String): User? {
     try {
         return withContext(Dispatchers.IO){
             var user: User? = null
@@ -55,7 +58,8 @@ suspend fun login(email: String, password: String): User? {
             val jsonBody = """
                 {
                     "email": "$email",
-                    "password": "$password"
+                    "password": "$password",
+                    "type": "$type"
                 }
             """.trimIndent()
             val requestBody = jsonBody.toRequestBody(jsonMediaType)
@@ -82,14 +86,66 @@ suspend fun login(email: String, password: String): User? {
                     val body = response.body?.string() ?: throw IOException("Empty body")
                     val jsonObject = JSONObject(body)
 
-                    user = User(
-                        jsonObject.getInt("id"),
-                        jsonObject.getString("first_name"),
-                        jsonObject.getString("last_name"),
-                        jsonObject.getString("phone_number"),
-                        jsonObject.getString("email"),
-                        ""
-                    )
+                    if(type=="owner"){
+
+                        val ownedProperties: List<Property>? =
+                            if (jsonObject.has("ownedProperty") && !jsonObject.isNull("ownedProperty")) {
+                            val jsonArray = jsonObject.getJSONArray("ownedProperty")
+                            List(jsonArray.length()) { i ->
+                                val propJson = jsonArray.getJSONObject(i)
+                                Property(
+                                    id = propJson.getInt("id"),
+                                    address = propJson.getString("address"),
+                                    owner_fk = propJson.getInt("owner_fk"),
+                                    ciudad = propJson.getString("ciudad"),
+                                    pais = propJson.getString("pais"),
+                                    alquiler = propJson.getInt("alquiler")
+                                )
+                            }
+                        } else null
+
+                        user = User(
+                            jsonObject.getInt("id"),
+                            jsonObject.getString("first_name"),
+                            jsonObject.getString("last_name"),
+                            jsonObject.getString("phone_number"),
+                            jsonObject.getString("email"),
+                            "",
+                            ownedProperties,
+                            null
+                        )
+                    }
+                    else if(type=="tenant"){
+
+                        val leasedProperty: Property? =
+                            if (jsonObject.has("leasedProperty") && !jsonObject.isNull("leasedProperty")) {
+                            val propJson = jsonObject.getJSONObject("leasedProperty")
+                            Property(
+                                id = propJson.getInt("id"),
+                                address = propJson.getString("address"),
+                                owner_fk = propJson.getInt("owner_fk"),
+                                ciudad = propJson.getString("ciudad"),
+                                pais = propJson.getString("pais"),
+                                alquiler = propJson.getInt("alquiler")
+                            )
+                        } else null
+
+                        user = User(
+                            jsonObject.getInt("id"),
+                            jsonObject.getString("first_name"),
+                            jsonObject.getString("last_name"),
+                            jsonObject.getString("phone_number"),
+                            jsonObject.getString("email"),
+                            "",
+                            null,
+                            leasedProperty
+                        )
+                    }
+                    if(user != null && user.ownedProperty == null && user.leasedProperty == null){
+                        //not owner or tenant
+                        user = null
+                    }
+
                 }
             }
 
@@ -150,101 +206,80 @@ suspend fun registerUser(user: User): Int {
     }
 }
 
-/*
-// =========================
-// ===== API GUILLERMO =====
-// =========================
-
 /**
- * Asks the API for a user with the specified email. DOES NOT VALIDATE THE EMAIL STRING NOR HASHES THE PASSWORD!!!
- * @param email The email of the user to be requested
- * @return Returns a User object
- * @throws IOException
+ * Returns the tenants of a property
+ * @param propertyId Property ID
+ * @return List of users (can be empty)
+ * @throws IOException Network or unexpected error
  */
-suspend fun getUserByEmail(email: String): User {
-    return withContext(Dispatchers.IO){
-        var userId = 0
-        var userNif = ""
-        var userFirstName = ""
-        var userLastName = ""
-        var userPhoneNumber = ""
-        var userEmail = ""
-        var userPassword = ""
-        var userAddressId = 0
+suspend fun getTenantsByProperty(propertyId: Int): List<User> {
+    try {
+        return withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/property/tenants/$propertyId")
+                .get()
+                .build()
 
-        val encodedEmail = URLEncoder.encode(email, "UTF-8")
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Unexpected error")
+                }
 
-        val request = Request.Builder()
-            .url("http://$HOST:$PORT/$USER_TABLE?$EMAIL_FIELD=$encodedEmail")
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful){
-                throw IOException("Network Error")
-            }
-
-            val body = response.body?.string()
-            if (body == null) throw IOException("Response body is null")
-            else {
+                val body = response.body?.string() ?: throw IOException("Empty body")
                 val jsonArray = JSONArray(body)
-                if (jsonArray.length() == 0) user = User(0, "", "", "", "", "", "", 0) // Represents an inexistent User
-                else {
-                    val jsonObject = jsonArray.getJSONObject(0)
 
-                    userId = jsonObject.getInt(ID_FIELD)
-                    userFirstName = jsonObject.getString(FIRST_NAME_FIELD)
-                    userLastName = jsonObject.getString(LAST_NAME_FIELD)
-                    userPhoneNumber = jsonObject.getString(PHONE_NUMBER_FIELD)
-                    userEmail = jsonObject.getString(EMAIL_FIELD)
-                    userPassword = jsonObject.getString(PASSWORD_FIELD)
-                    userAddressId = jsonObject.getInt(ADDRESS_FIELD)
-                    userNif = jsonObject.getString(NIF_FIELD)
+                List(jsonArray.length()) { i ->
+                    val u = jsonArray.getJSONObject(i)
+                    User(
+                        id = u.getInt("id"),
+                        firstName = u.getString("first_name"),
+                        lastName = u.getString("last_name"),
+                        phoneNumber = u.getString("phone_number"),
+                        email = u.getString("email"),
+                        password = "",
+                        ownedProperty = null,
+                        leasedProperty = null
+                    )
                 }
             }
         }
-
-        User()
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
     }
 }
-
 /**
- * Asks the API to insert a new user into the database (for register)
- * @param user The User object that needs to be inserted
- * @return Returns a status code. 0 = Succes; 1 = Failure; -1 = Method error;
+ * Returns the services of a property
+ * @param propertyId Property ID
+ * @return Service or null if not exists
+ * @throws IOException Network or unexpected error
  */
-/*
-TODO
-    - Hash password
- */
-suspend fun insertUser(user: User): Int {
-    return withContext(Dispatchers.IO){
-        var statusCode = -1
+suspend fun getServicesByProperty(propertyId: Int): Service? {
+    try {
+        return withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/property/services/$propertyId")
+                .get()
+                .build()
 
-        val encodedEmail = URLEncoder.encode(user.email, "UTF-8")
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Unexpected error")
+                }
 
-        val request = Request.Builder()
-            .url("http://$HOST:$PORT/insert/$USER_TABLE" +
-                    "?$NIF_FIELD=${user.nif}" +
-                    "&$FIRST_NAME_FIELD=${user.firstName}" +
-                    "&$LAST_NAME_FIELD=${user.lastName}" +
-                    "&$EMAIL_FIELD=${encodedEmail}" +
-                    "&$PHONE_NUMBER_FIELD=${user.phoneNumber}" +
-                    "&$PASSWORD_FIELD=${user.password}" +
-                    "&$ADDRESS_FIELD=${user.addressId}")
-            .post("".toRequestBody("application/json".toMediaType()))
-            .build()
+                val body = response.body?.string() ?: throw IOException("Empty body")
+                val jsonObject = JSONObject(body)
 
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful){
-                statusCode = 1
-                // TODO añadir códigos de error a la API
-            }
-            else {
-                statusCode = 0
+                if (jsonObject.isNull("included") && jsonObject.isNull("excluded")) {
+                    null
+                } else {
+                    Service(
+                        included = jsonObject.getString("included"),
+                        excluded = jsonObject.getString("excluded")
+                    )
+                }
             }
         }
-
-        statusCode
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
     }
 }
-*/
