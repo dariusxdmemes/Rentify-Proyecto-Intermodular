@@ -2,6 +2,7 @@ package com.example.rentify_proyecto_intermodular.ui.register
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,160 +41,188 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
-    modifier: Modifier,
     applicationContext: Context,
     coroutineScope: CoroutineScope,
     navController: NavHostController
 ) {
-    val loginRoute = stringResource(R.string.navigation_login)
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
-    val registerFields = listOf(
-        RegisterOption(
-            stringResource(R.string.register_first_name_label),
-            remember { mutableStateOf("") },
-            KeyboardOptions(keyboardType = KeyboardType.Text)
-        ),
-        RegisterOption(
-            stringResource(R.string.register_last_name_label),
-            remember { mutableStateOf("") },
-            KeyboardOptions(keyboardType = KeyboardType.Text)
-        ),
-        RegisterOption(
-            stringResource(R.string.register_phone_label),
-            remember { mutableStateOf("") },
-            KeyboardOptions(keyboardType = KeyboardType.Number)
-        ),
-        RegisterOption(
-            stringResource(R.string.register_email_label),
-            remember { mutableStateOf("") },
-            KeyboardOptions(keyboardType = KeyboardType.Email)
-        ),
-        RegisterOption(
-            stringResource(R.string.register_passwd_label),
-            remember { mutableStateOf("") },
-            KeyboardOptions(keyboardType = KeyboardType.Password)
-        ),
-        RegisterOption(
-            stringResource(R.string.register_confirm_passwd_label),
-            remember { mutableStateOf("") },
-            KeyboardOptions(keyboardType = KeyboardType.Password)
+        val modifier = Modifier
+            .padding(innerPadding)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+
+        val loginRoute = stringResource(R.string.navigation_login)
+
+        val registerFields = listOf(
+            RegisterOption(
+                stringResource(R.string.register_first_name_label),
+                remember { mutableStateOf("") },
+                KeyboardOptions(keyboardType = KeyboardType.Text)
+            ),
+            RegisterOption(
+                stringResource(R.string.register_last_name_label),
+                remember { mutableStateOf("") },
+                KeyboardOptions(keyboardType = KeyboardType.Text)
+            ),
+            RegisterOption(
+                stringResource(R.string.register_phone_label),
+                remember { mutableStateOf("") },
+                KeyboardOptions(keyboardType = KeyboardType.Number)
+            ),
+            RegisterOption(
+                stringResource(R.string.register_email_label),
+                remember { mutableStateOf("") },
+                KeyboardOptions(keyboardType = KeyboardType.Email)
+            ),
+            RegisterOption(
+                stringResource(R.string.register_passwd_label),
+                remember { mutableStateOf("") },
+                KeyboardOptions(keyboardType = KeyboardType.Password)
+            ),
+            RegisterOption(
+                stringResource(R.string.register_confirm_passwd_label),
+                remember { mutableStateOf("") },
+                KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+
         )
 
-    )
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
         Column(
-            //verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.scrim
-            )
-            Text(
-                text = stringResource(R.string.app_slogan_register),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .padding(bottom = 10.dp)
-            )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                border = CardDefaults.outlinedCardBorder()
+            Column(
+                //verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.scrim
+                )
+                Text(
+                    text = stringResource(R.string.app_slogan_register),
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
-                        .padding(5.dp)
+                        .padding(bottom = 10.dp)
+                )
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
+                    border = CardDefaults.outlinedCardBorder()
                 ) {
-                    registerFields.forEach { field ->
-                        OutlinedTextField(
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedTextColor = MaterialTheme.colorScheme.scrim,
-
-                                focusedLabelColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
-
-                                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-
-                                focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.scrim,
-
-                                cursorColor = MaterialTheme.colorScheme.scrim,
-                            ),
-                            value = field.fieldState.value,
-                            onValueChange = {
-                                field.fieldState.value = it
-                            },
-                            label = {
-                                Text(
-                                    text = field.fieldLabel
-                                )
-                            },
-                            keyboardOptions = field.fieldKeyboardOption,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(5.dp)
-                        )
-                    }
-                    Row(
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                            .padding(5.dp)
                     ) {
-                        Button(
-                            onClick = {
-                                if (registerFields[4].fieldState.value != registerFields[5].fieldState.value) // check if both password fields match
-                                    Toast.makeText(applicationContext, "Passwords don't match", Toast.LENGTH_LONG).show()
-                                else
-                                    coroutineScope.launch{
-                                        try {
-                                            val statusCode = registerUser(
-                                                user = User(
-                                                    0,
-                                                    registerFields[0].fieldState.value,
-                                                    registerFields[1].fieldState.value,
-                                                    registerFields[2].fieldState.value,
-                                                    registerFields[3].fieldState.value,
-                                                    registerFields[4].fieldState.value
-                                                )
-                                            )
+                        registerFields.forEach { field ->
+                            OutlinedTextField(
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.scrim,
 
-                                            when (statusCode) {
-                                                0 -> {
-                                                    Toast.makeText(applicationContext, "Register successful!", Toast.LENGTH_LONG).show()
-                                                    delay(1000)
-                                                    navController.navigate(loginRoute)
-                                                }
-                                                1 -> Toast.makeText(applicationContext, "An account with that email already exists", Toast.LENGTH_LONG).show()
-                                                2 -> Toast.makeText(applicationContext, "Unexpected error. Try again later.", Toast.LENGTH_LONG).show()
-                                            }
-                                        } catch (e: Exception) {
-                                            Toast.makeText(applicationContext, "Unexpected error. Try again later.", Toast.LENGTH_LONG).show()
-                                        }
-                                    }
-                            },
+                                    focusedLabelColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
+
+                                    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+
+                                    focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.scrim,
+
+                                    cursorColor = MaterialTheme.colorScheme.scrim,
+                                ),
+                                value = field.fieldState.value,
+                                onValueChange = {
+                                    field.fieldState.value = it
+                                },
+                                label = {
+                                    Text(
+                                        text = field.fieldLabel
+                                    )
+                                },
+                                keyboardOptions = field.fieldKeyboardOption,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(5.dp)
+                            )
+                        }
+                        Row(
                             modifier = Modifier
-                                .padding(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = stringResource(R.string.register_button_text),
-                                style = MaterialTheme.typography.labelLarge
-                            )
+                            Button(
+                                onClick = {
+                                    if (registerFields[4].fieldState.value != registerFields[5].fieldState.value) // check if both password fields match
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Passwords don't match",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    else
+                                        coroutineScope.launch {
+                                            try {
+                                                val statusCode = registerUser(
+                                                    user = User(
+                                                        0,
+                                                        registerFields[0].fieldState.value,
+                                                        registerFields[1].fieldState.value,
+                                                        registerFields[2].fieldState.value,
+                                                        registerFields[3].fieldState.value,
+                                                        registerFields[4].fieldState.value
+                                                    )
+                                                )
+
+                                                when (statusCode) {
+                                                    0 -> {
+                                                        Toast.makeText(
+                                                            applicationContext,
+                                                            "Register successful!",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                        delay(1000)
+                                                        navController.navigate(loginRoute)
+                                                    }
+
+                                                    1 -> Toast.makeText(
+                                                        applicationContext,
+                                                        "An account with that email already exists",
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+
+                                                    2 -> Toast.makeText(
+                                                        applicationContext,
+                                                        "Unexpected error. Try again later.",
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                }
+                                            } catch (e: Exception) {
+                                                Toast.makeText(
+                                                    applicationContext,
+                                                    "Unexpected error. Try again later.",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                        }
+                                },
+                                modifier = Modifier
+                                    .padding(16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.register_button_text),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
                         }
                     }
                 }

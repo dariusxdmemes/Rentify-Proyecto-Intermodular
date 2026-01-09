@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
+import com.example.rentify_proyecto_intermodular.ui.main.MainScreen
 import com.example.rentify_proyecto_intermodular.ui.register.RegisterScreen
 import com.example.rentify_proyecto_intermodular.ui.theme.RentifyProyectoIntermodularTheme
 
@@ -38,45 +39,30 @@ class MainActivity : ComponentActivity() {
 
                 var actualUser by rememberSaveable { mutableStateOf<User?>(null) }
 
+                NavHost(
+                    navController = navController,
+                    startDestination = "Login"
+                ) {
+                    composable ("Login") {
+                        LoginScreen(
+                            applicationContext = applicationContext,
+                            coroutineScope = coroutineScope,
+                            navController = navController,
+                            actualUser = actualUser,
+                            onUserChange  = { actualUser = it }
+                        )
+                    }
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    composable ("Register") {
+                        RegisterScreen(
+                            applicationContext = applicationContext,
+                            coroutineScope = coroutineScope,
+                            navController = navController
+                        )
+                    }
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = "Login"
-                    ) {
-                        composable ("Login") {
-                            LoginScreen(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .background(MaterialTheme.colorScheme.primaryContainer),
-                                applicationContext = applicationContext,
-                                coroutineScope = coroutineScope,
-                                navController = navController,
-                                actualUser = actualUser,
-                                onUserChange  = { actualUser = it }
-                            )
-                        }
-
-                        composable ("Register") {
-                            RegisterScreen(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .background(MaterialTheme.colorScheme.primaryContainer),
-                                applicationContext = applicationContext,
-                                coroutineScope = coroutineScope,
-                                navController = navController
-                            )
-                        }
-
-                        composable ("HomeOwner") {
-                            HomeOwnerScreen(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .background(MaterialTheme.colorScheme.primaryContainer),
-                                actualUser = actualUser
-                            )
-                        }
+                    composable ("Main") {
+                        MainScreen(actualUser)
                     }
                 }
             }
