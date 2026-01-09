@@ -45,7 +45,8 @@ val client: OkHttpClient = OkHttpClient()
  * Checks the credentials against the API
  * @param email The user's email
  * @param password The user's password in plaintext
- * @return Returns the information of the user on successful login, and `null` on incorrect credentials.
+ * @param type The user's type, either "owner" o "tenant"
+ * @return Returns the User object on successful login, and `null` on incorrect credentials.
  * @throws IOException Throws `IOException` in case of network error
  */
 
