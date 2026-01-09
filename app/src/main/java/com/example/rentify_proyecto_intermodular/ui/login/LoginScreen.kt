@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,37 +48,41 @@ import java.io.IOException
 
 @Composable
 fun LoginScreen(
-    modifier: Modifier,
     applicationContext: Context,
     coroutineScope: CoroutineScope,
     navController: NavHostController,
     actualUser: User?,
     onUserChange: (User?) -> Unit
 ) {
-    val radioButtons = listOf(
-        LoginOption(
-            R.string.radio_owner_login
-        ),
-        LoginOption(
-            R.string.radio_tenant_login
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        val modifier = Modifier
+            .padding(innerPadding)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+
+        val radioButtons = listOf(
+            LoginOption(
+                R.string.radio_owner_login
+            ),
+            LoginOption(
+                R.string.radio_tenant_login
+            )
         )
-    )
 
-    var selectedOption by remember { mutableStateOf(radioButtons[0]) }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+        var selectedOption by remember { mutableStateOf(radioButtons[0]) }
+        var email by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        var passwordVisible by remember { mutableStateOf(false) }
 
-    val registerRoute = stringResource(R.string.navigation_register)
-    val homeOwnerRoute = stringResource(R.string.navigation_home_owner)
+        val registerRoute = stringResource(R.string.navigation_register)
+        val homeOwnerRoute = stringResource(R.string.navigation_home_owner)
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -239,28 +244,43 @@ fun LoginScreen(
                         onClick = {
                             coroutineScope.launch {
                                 try {
-                                    if (selectedOption.text == R.string.radio_owner_login){
+                                    if (selectedOption.text == R.string.radio_owner_login) {
                                         val user = login(email, password, "owner")
-                                        if (user == null){
-                                            Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
-                                        }else{
+                                        if (user == null) {
+                                            Toast.makeText(
+                                                applicationContext,
+                                                "Invalid Credentials",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        } else {
                                             onUserChange(user)
-                                            navController.navigate(homeOwnerRoute)
+                                            navController.navigate("Main")
                                         }
-                                    }
-                                    else if (selectedOption.text == R.string.radio_tenant_login) {
+                                    } else if (selectedOption.text == R.string.radio_tenant_login) {
                                         val user = login(email, password, "tenant")
-                                        if (user == null){
-                                            Toast.makeText(applicationContext, "Invalid Credentials", Toast.LENGTH_LONG).show()
-                                        }else{
+                                        if (user == null) {
+                                            Toast.makeText(
+                                                applicationContext,
+                                                "Invalid Credentials",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        } else {
                                             onUserChange(user)
                                             /*TODO PABLO implement navigation to tenant's home*/
-                                            Toast.makeText(applicationContext, "Tenant login yet to be implemented", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(
+                                                applicationContext,
+                                                "Tenant login yet to be implemented",
+                                                Toast.LENGTH_LONG
+                                            ).show()
                                         }
                                     }
 
                                 } catch (e: IOException) {
-                                    Toast.makeText(applicationContext, "An Unexpected Error Ocurred. Try again.", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "An Unexpected Error Ocurred. Try again.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             }
                         }
@@ -285,8 +305,8 @@ fun LoginScreen(
                     )
                 }
             }
+        }
     }
-
 }
 
 
