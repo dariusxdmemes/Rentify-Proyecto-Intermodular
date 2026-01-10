@@ -18,15 +18,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
+import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
+import com.example.rentify_proyecto_intermodular.data.model.Property
+import com.example.rentify_proyecto_intermodular.data.model.Service
+import com.example.rentify_proyecto_intermodular.data.model.User
 
 @Composable
 fun HomeTenantScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    actualUser: User,
+    leasedProperty: Property
 ) {
+    var services by remember { mutableStateOf<Service?>(null) }
+    LaunchedEffect(leasedProperty.id) {
+        services = getServicesByProperty(leasedProperty.id)
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -59,22 +76,22 @@ fun HomeTenantScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "John Doe (HARDCODED)",
+                        text = "${actualUser.firstName} ${actualUser.lastName}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Calle Falsa, 123, Ciudad Falsa (HARDCODED)",
+                        text = leasedProperty.address,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "457€ (HARDCODED)",
+                        text = leasedProperty.alquiler.toString(),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Plaza de garaje, comunidad (HARDCODED)",
+                        text = services?.included ?: "No disponible",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

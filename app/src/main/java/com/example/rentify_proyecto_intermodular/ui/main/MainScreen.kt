@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
+import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
 
 /**
     This is the main composable function of the app.
@@ -29,7 +30,7 @@ import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 
 @Composable
 fun MainScreen(
-    actualUser: User?
+    actualUser: User
 ){
     val navController = rememberNavController()
     val startDestination = Destinations.HOME
@@ -63,10 +64,21 @@ fun MainScreen(
             startDestination = startDestination.route
         ){
             composable(Destinations.HOME.route) {
-                HomeOwnerScreen(
-                    modifier = Modifier.padding(contentPadding),
-                    actualUser = actualUser
-                )
+                if (actualUser.ownedProperty != null){
+                    HomeOwnerScreen(
+                        modifier = Modifier.padding(contentPadding),
+                        actualUser = actualUser
+                    )
+                }
+                else if (actualUser.leasedProperty != null){
+                    HomeTenantScreen(
+                        actualUser = actualUser,
+                        leasedProperty = actualUser.leasedProperty
+                    )
+                }
+                else {
+                    Text(text="ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
+                }
             }
         }
     }
