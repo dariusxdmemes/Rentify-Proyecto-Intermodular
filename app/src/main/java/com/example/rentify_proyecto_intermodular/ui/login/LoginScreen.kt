@@ -266,12 +266,7 @@ fun LoginScreen(
                                             ).show()
                                         } else {
                                             onUserChange(user)
-                                            /*TODO PABLO implement navigation to tenant's home*/
-                                            Toast.makeText(
-                                                applicationContext,
-                                                "Tenant login yet to be implemented",
-                                                Toast.LENGTH_LONG
-                                            ).show()
+                                            navController.navigate("Main")
                                         }
                                     }
 
