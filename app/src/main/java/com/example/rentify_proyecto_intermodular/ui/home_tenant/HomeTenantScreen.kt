@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.getOwnerUser
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Property
@@ -42,8 +43,12 @@ fun HomeTenantScreen(
     leasedProperty: Property
 ) {
     var services by remember { mutableStateOf<Service?>(null) }
+    var owner by remember { mutableStateOf<User?>(null) }
+
+
     LaunchedEffect(leasedProperty.id) {
         services = getServicesByProperty(leasedProperty.id)
+        owner = getOwnerUser(leasedProperty.owner_fk)
     }
 
     Box(
@@ -98,7 +103,8 @@ fun HomeTenantScreen(
                     ) {
                         Text(
                             //todo [REPLACE ACTUAL USER DATA WITH OWNER DATA]
-                            text = "${stringResource(R.string.home_tenant_name_placeholder)} ${actualUser.firstName} ${actualUser.lastName}",
+                            text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
+                                    "${owner?.firstName?: "No disponible"} ${owner?.lastName?: "No disponible"}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
