@@ -104,7 +104,8 @@ fun HomeTenantScreen(
                         Text(
                             //todo [REPLACE ACTUAL USER DATA WITH OWNER DATA]
                             text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
-                                    "${owner?.firstName?: "No disponible"} ${owner?.lastName?: "No disponible"}",
+                                    "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
+                                    "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
