@@ -44,11 +44,12 @@ fun HomeTenantScreen(
 ) {
     var services by remember { mutableStateOf<Service?>(null) }
     var owner by remember { mutableStateOf<User?>(null) }
-
+    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(leasedProperty.id) {
         services = getServicesByProperty(leasedProperty.id)
         owner = getOwnerUser(leasedProperty.owner_fk)
+        isLoading= false
     }
 
     Box(
@@ -101,28 +102,32 @@ fun HomeTenantScreen(
                             .fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text(
-                            //todo [REPLACE ACTUAL USER DATA WITH OWNER DATA]
-                            text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
-                                    "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
-                                    "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_adress_placeholder)} ${leasedProperty.address}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        if (isLoading) {
+                            Text(text = "Cargando datos...")
+                        } else {
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
+                                        "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
+                                        "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_adress_placeholder)} ${leasedProperty.address}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
                     }
                 }
             }
