@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
+import com.example.rentify_proyecto_intermodular.ui.incidents_owner.IncidentsOwnerScreen
 
 /**
     This is the main composable function of the app.
@@ -78,6 +79,16 @@ fun MainScreen(
                 }
                 else {
                     Text(text="ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
+                }
+            }
+            composable(Destinations.INCIDENTS.route) {
+                if (actualUser.ownedProperty != null) {
+                    IncidentsOwnerScreen(
+                        modifier = Modifier.padding(contentPadding),
+                        actualUser = actualUser
+                    )
+                } else if (actualUser.leasedProperty != null) {
+                    // todo CREAR LA PANTALLA DE INCIDENCIAS DEL INQUILINO.
                 }
             }
         }
