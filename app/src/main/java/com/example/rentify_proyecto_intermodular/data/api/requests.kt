@@ -343,7 +343,6 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
 suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): User? {
     try {
         return withContext(Dispatchers.IO){
-            var code = 2
 
             val jsonBody = """
                 {
