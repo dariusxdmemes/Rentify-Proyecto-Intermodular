@@ -35,6 +35,8 @@ import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 @Composable
 fun HomeTenantScreen(
@@ -44,13 +46,27 @@ fun HomeTenantScreen(
 ) {
     var services by remember { mutableStateOf<Service?>(null) }
     var owner by remember { mutableStateOf<User?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(false) }
 
-    LaunchedEffect(leasedProperty.id) {
-        services = getServicesByProperty(leasedProperty.id)
-        owner = getOwnerUser(leasedProperty.owner_fk)
-        isLoading= false
+    LaunchedEffect(leasedProperty) {
+        isLoading = true
+        try {
+            coroutineScope {
+                val servicesDeferred = async {
+                    getServicesByProperty(leasedProperty.id)
+                }
+                val ownerDeferred = async {
+                    getOwnerUser(leasedProperty.owner_fk)
+                }
+
+                services = servicesDeferred.await()
+                owner = ownerDeferred.await()
+            }
+        } finally {
+            isLoading = false
+        }
     }
+
 
     Box(
         modifier = modifier
