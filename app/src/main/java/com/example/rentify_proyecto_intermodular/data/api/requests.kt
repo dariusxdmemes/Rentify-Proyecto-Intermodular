@@ -283,3 +283,45 @@ suspend fun getServicesByProperty(propertyId: Int): Service? {
         throw IOException("Unexpected error")
     }
 }
+
+
+suspend fun getOwnerUser(ownerFK: Int): User? {
+    try {
+        return withContext(Dispatchers.IO){
+
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/owner/$ownerFK")
+                .get()
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Unexpected error")
+                }
+
+                val body = response.body?.string() ?: throw IOException("Empty body")
+                val jsonObject = JSONObject(body)
+
+                if (jsonObject.isNull("first_name") && jsonObject.isNull("last_name")) {
+                    null
+                } else {
+                    User(
+                        id = jsonObject.getInt("id"),
+                        firstName = jsonObject.getString("first_name"),
+                        lastName = jsonObject.getString("last_name"),
+                        phoneNumber = jsonObject.getString("phone_number"),
+                        email = jsonObject.getString("email"),
+                        password = "",
+                        ownedProperty = null,
+                        leasedProperty = null
+                    )
+
+                }
+            }
+
+
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
+    }
+}
