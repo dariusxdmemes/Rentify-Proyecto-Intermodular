@@ -67,7 +67,13 @@ class MainActivity : ComponentActivity() {
                             Text(text="actualUser es null (PREGUNTAR A GUILLE!)")
                         }
                         else {
-                            MainScreen(actualUser!!)
+                            MainScreen(
+                                actualUser = actualUser!!,
+                                onUserLogout = {
+                                    actualUser = null
+                                    navController.navigate("Login")
+                                }
+                            )
                         }
                     }
                 }
