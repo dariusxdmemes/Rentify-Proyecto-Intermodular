@@ -35,6 +35,8 @@ import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 @Composable
 fun HomeTenantScreen(
@@ -44,12 +46,27 @@ fun HomeTenantScreen(
 ) {
     var services by remember { mutableStateOf<Service?>(null) }
     var owner by remember { mutableStateOf<User?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
+    LaunchedEffect(leasedProperty) {
+        isLoading = true
+        try {
+            coroutineScope {
+                val servicesDeferred = async {
+                    getServicesByProperty(leasedProperty.id)
+                }
+                val ownerDeferred = async {
+                    getOwnerUser(leasedProperty.owner_fk)
+                }
 
-    LaunchedEffect(leasedProperty.id) {
-        services = getServicesByProperty(leasedProperty.id)
-        owner = getOwnerUser(leasedProperty.owner_fk)
+                services = servicesDeferred.await()
+                owner = ownerDeferred.await()
+            }
+        } finally {
+            isLoading = false
+        }
     }
+
 
     Box(
         modifier = modifier
@@ -101,28 +118,32 @@ fun HomeTenantScreen(
                             .fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text(
-                            //todo [REPLACE ACTUAL USER DATA WITH OWNER DATA]
-                            text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
-                                    "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
-                                    "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_adress_placeholder)} ${leasedProperty.address}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        if (isLoading) {
+                            Text(text = stringResource(R.string.wait))
+                        } else {
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
+                                        "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
+                                        "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_adress_placeholder)} ${leasedProperty.address}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
                     }
                 }
             }

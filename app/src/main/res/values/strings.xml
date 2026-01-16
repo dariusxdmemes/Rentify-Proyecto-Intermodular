@@ -28,6 +28,8 @@
 
     <string name="euro">€</string>
 
+    <string name="wait">Cargando datos…</string>
+
     <string name="navigation_login">Login</string>
     <string name="navigation_register">Register</string>
     <string name="navigation_home_owner">HomeOwner</string>
