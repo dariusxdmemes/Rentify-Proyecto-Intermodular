@@ -247,6 +247,7 @@ suspend fun getTenantsByProperty(propertyId: Int): List<User> {
         throw IOException("Unexpected error")
     }
 }
+
 /**
  * Returns the services of a property
  * @param propertyId Property ID
@@ -285,6 +286,12 @@ suspend fun getServicesByProperty(propertyId: Int): Service? {
 }
 
 
+/**
+ * Returns the user owner of a property by his user id
+ * @param ownerFK User ID
+ * @return User or null if name and lastname are void
+ * @throws IOException Network or unexpected error
+ */
 suspend fun getOwnerUser(ownerFK: Int): User? {
     try {
         return withContext(Dispatchers.IO){
@@ -319,6 +326,67 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
                 }
             }
 
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
+    }
+}
+
+
+
+/**
+ * Registers a user in the database
+ * @param user The `User` object that needs to be registered. ID field is ignored.
+ * @return An status code. 0: success. 1: duplicated email. 2: unexpected error.
+ */
+
+suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): User? {
+    try {
+        return withContext(Dispatchers.IO){
+            var code = 2
+
+            val jsonBody = """
+                {
+                    "id": "${user.id}",
+                    "first_name": "${user.firstName}",
+                    "last_name": "${user.lastName}",
+                    "email": "${user.email}",
+                    "phone_number": "${user.phoneNumber}",
+                    "actualpassword": "$actualpassword",
+                    "newpassword": "$newpassword"
+                }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/update/user")
+                .put(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Unexpected error")
+                }
+
+                val body = response.body?.string() ?: throw IOException("Empty body")
+                val jsonObject = JSONObject(body)
+
+                if (jsonObject.isNull("first_name") && jsonObject.isNull("last_name")) {
+                    null
+                } else {
+                    User(
+                        id = jsonObject.getInt("id"),
+                        firstName = jsonObject.getString("first_name"),
+                        lastName = jsonObject.getString("last_name"),
+                        phoneNumber = jsonObject.getString("phone_number"),
+                        email = jsonObject.getString("email"),
+                        password = "",
+                        ownedProperty = null,
+                        leasedProperty = null
+                    )
+
+                }
+            }
 
         }
     } catch (e: Exception) {
