@@ -103,7 +103,7 @@ fun HomeTenantScreen(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         if (isLoading) {
-                            Text(text = "Cargando datos...")
+                            Text(text = stringResource(R.string.wait))
                         } else {
                             Text(
                                 text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
