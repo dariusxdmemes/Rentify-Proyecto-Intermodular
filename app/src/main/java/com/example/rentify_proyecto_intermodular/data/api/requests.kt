@@ -335,9 +335,9 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
 
 
 /**
- * Registers a user in the database
- * @param user The `User` object that needs to be registered. ID field is ignored.
- * @return An status code. 0: success. 1: duplicated email. 2: unexpected error.
+ * Update a user in the database
+ * @param (user, actualpassword, newpassword).
+ * @return return de actual user with his information updated.
  */
 
 suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): User? {
@@ -387,6 +387,44 @@ suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): 
                 }
             }
 
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
+    }
+}
+
+
+/**
+ * Delete a user in the database
+ * @param id_user
+ * @return An status code. 0: success. 1: user not found. 2: unexpected error.
+ */
+
+suspend fun deleteUser(id_user: Int): Int {
+    try {
+        return withContext(Dispatchers.IO){
+            var code = 1
+
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/users/$id_user")
+                .delete()
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful){
+                    if (response.code == 404) {
+                        code = 1 // user not found
+                    }
+                    else {
+                        code = 2 // generic error
+                    }
+                }
+                else {
+                    code = 0 // success
+                }
+            }
+
+            code
         }
     } catch (e: Exception) {
         throw IOException("Unexpected error")
