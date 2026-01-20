@@ -1,6 +1,5 @@
 package com.example.rentify_proyecto_intermodular.ui.main
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -15,14 +14,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
-import com.example.rentify_proyecto_intermodular.ui.owner_settings.OwnerSettingsScreen
+import com.example.rentify_proyecto_intermodular.ui.settings.OwnerSettingsScreen
+import com.example.rentify_proyecto_intermodular.ui.settings.TenantSettingsScreen
 
 /**
     This is the main composable function of the app.
@@ -95,7 +94,11 @@ fun MainScreen(
                     )
                 }
                 else if (actualUser.leasedProperty != null) {
-                    Text(text="Tenant settings yet to be implemented...")
+                    TenantSettingsScreen(
+                        modifier = Modifier.padding(contentPadding),
+                        actualUser = actualUser,
+                        onUserLogout = onUserLogout
+                    )
                 }
                 else {
                     Text(text="ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
