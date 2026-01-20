@@ -5,5 +5,4 @@ data class Incident (
     val name: String,
     val description: String,
     val property: Property,
-    val messages: List<Message>
 )

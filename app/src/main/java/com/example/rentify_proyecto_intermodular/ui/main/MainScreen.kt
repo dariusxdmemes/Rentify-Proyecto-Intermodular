@@ -21,6 +21,7 @@ import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
 import com.example.rentify_proyecto_intermodular.ui.incidents_owner.IncidentsOwnerScreen
+import com.example.rentify_proyecto_intermodular.ui.incidents_tenant.IncidentsTenantScreen
 
 /**
     This is the main composable function of the app.
@@ -88,7 +89,10 @@ fun MainScreen(
                         actualUser = actualUser
                     )
                 } else if (actualUser.leasedProperty != null) {
-                    // todo CREAR LA PANTALLA DE INCIDENCIAS DEL INQUILINO.
+                    IncidentsTenantScreen(
+                        modifier = Modifier.padding(contentPadding),
+                        actualUser = actualUser
+                    )
                 }
             }
         }
