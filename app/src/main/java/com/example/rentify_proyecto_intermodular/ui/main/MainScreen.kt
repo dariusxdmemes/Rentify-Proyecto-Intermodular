@@ -20,6 +20,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
+import com.example.rentify_proyecto_intermodular.ui.settings.OwnerSettingsScreen
+import com.example.rentify_proyecto_intermodular.ui.settings.TenantSettingsScreen
 import com.example.rentify_proyecto_intermodular.ui.incidents_owner.IncidentsOwnerScreen
 
 /**
@@ -31,7 +33,8 @@ import com.example.rentify_proyecto_intermodular.ui.incidents_owner.IncidentsOwn
 
 @Composable
 fun MainScreen(
-    actualUser: User
+    actualUser: User,
+    onUserLogout: () -> Unit
 ){
     val navController = rememberNavController()
     val startDestination = Destinations.HOME
@@ -65,14 +68,15 @@ fun MainScreen(
             startDestination = startDestination.route
         ){
             composable(Destinations.HOME.route) {
-                if (actualUser.ownedProperty != null){
+                if (actualUser.ownedProperty != null){ // If ownedProperty is not null, we assume it is an owner
                     HomeOwnerScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser
                     )
                 }
-                else if (actualUser.leasedProperty != null){
+                else if (actualUser.leasedProperty != null){ // If leasedProperty is not null, we assume it is an tenant
                     HomeTenantScreen(
+                        modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
                         leasedProperty = actualUser.leasedProperty
                     )
@@ -81,6 +85,24 @@ fun MainScreen(
                     Text(text="ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
                 }
             }
+
+            composable (Destinations.OPTIONS.route) {
+                if (actualUser.ownedProperty != null){
+                    OwnerSettingsScreen(
+                        modifier = Modifier.padding(contentPadding),
+                        actualUser = actualUser,
+                        onUserLogout = onUserLogout
+                    )
+                }
+                else if (actualUser.leasedProperty != null) {
+                    TenantSettingsScreen(
+                        modifier = Modifier.padding(contentPadding),
+                        actualUser = actualUser,
+                        onUserLogout = onUserLogout
+                    )
+                }
+                else {
+                    Text(text="ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
             composable(Destinations.INCIDENTS.route) {
                 if (actualUser.ownedProperty != null) {
                     IncidentsOwnerScreen(

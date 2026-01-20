@@ -68,7 +68,13 @@ class MainActivity : ComponentActivity() {
                             //no se puede llegar a ruta main con user null, por que si no no se puedria crear el contenido adecuado
                         }
                         else {
-                            MainScreen(actualUser!!)
+                            MainScreen(
+                                actualUser = actualUser!!,
+                                onUserLogout = {
+                                    actualUser = null
+                                    navController.navigate("Login")
+                                }
+                            )
                         }
                     }
                 }

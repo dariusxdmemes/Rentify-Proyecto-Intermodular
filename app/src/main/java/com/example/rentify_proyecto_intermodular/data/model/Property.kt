@@ -18,4 +18,3 @@ data class Property(
     val pais: String,
     val alquiler: Int
 )
-
