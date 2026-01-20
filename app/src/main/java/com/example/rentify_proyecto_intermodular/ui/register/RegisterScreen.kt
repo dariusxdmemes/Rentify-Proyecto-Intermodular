@@ -160,57 +160,68 @@ fun RegisterScreen(
                         ) {
                             Button(
                                 onClick = {
-                                    if (registerFields[4].fieldState.value != registerFields[5].fieldState.value) // check if both password fields match
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Passwords don't match",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    else
-                                        coroutineScope.launch {
-                                            try {
-                                                val statusCode = registerUser(
-                                                    user = User(
-                                                        0,
-                                                        registerFields[0].fieldState.value,
-                                                        registerFields[1].fieldState.value,
-                                                        registerFields[2].fieldState.value,
-                                                        registerFields[3].fieldState.value,
-                                                        registerFields[4].fieldState.value
+
+                                    val firstName = registerFields[0].fieldState.value
+                                    val lastName = registerFields[1].fieldState.value
+                                    val phoneNumber = registerFields[2].fieldState.value
+                                    val email = registerFields[3].fieldState.value
+                                    val password = registerFields[4].fieldState.value
+                                    val confirmPassord = registerFields[5].fieldState.value
+
+                                    when {
+                                        firstName.isBlank() || lastName.isBlank() || phoneNumber.isBlank() || email.isBlank() || password.isBlank() -> {
+                                            Toast.makeText(applicationContext, "All fields are required (STIRNGS.XML)",
+                                                Toast.LENGTH_LONG).show()
+                                        }
+
+                                        !isValidEmail(email) -> {
+                                            Toast.makeText(applicationContext, "Invalid email format (STRINGS.XML)",
+                                                Toast.LENGTH_LONG).show()
+                                        }
+
+                                        !isValidPhone(phoneNumber) -> {
+                                            Toast.makeText(applicationContext, "Invalid phone format", Toast.LENGTH_SHORT).show()
+                                        }
+
+                                        !isValidPassword(password) -> {
+                                            Toast.makeText(applicationContext, "Password must be at least 6 (STRING.XML)",
+                                                Toast.LENGTH_LONG).show()
+                                        }
+
+                                        password != confirmPassord -> {
+                                            Toast.makeText(applicationContext, "Passwords dont match!", Toast.LENGTH_LONG).show()
+                                        }
+
+                                        else -> {
+                                            coroutineScope.launch {
+                                                try {
+                                                    val statusCode = registerUser(
+                                                        user = User(
+                                                            0,
+                                                            firstName,
+                                                            lastName,
+                                                            phoneNumber,
+                                                            email,
+                                                            password
+                                                        )
                                                     )
-                                                )
 
-                                                when (statusCode) {
-                                                    0 -> {
-                                                        Toast.makeText(
-                                                            applicationContext,
-                                                            "Register successful!",
-                                                            Toast.LENGTH_LONG
-                                                        ).show()
-                                                        delay(1000)
-                                                        navController.navigate(loginRoute)
+                                                    when(statusCode) {
+                                                        0 -> {
+                                                            Toast.makeText(applicationContext, "Register successful", Toast.LENGTH_SHORT).show()
+                                                            navController.navigate(loginRoute)
+                                                        }
+                                                        1 -> Toast.makeText(applicationContext, "An user exists", Toast.LENGTH_LONG).show()
+                                                        2 -> Toast.makeText(applicationContext, "Unexpected error try again",
+                                                            Toast.LENGTH_SHORT).show()
                                                     }
-
-                                                    1 -> Toast.makeText(
-                                                        applicationContext,
-                                                        "An account with that email already exists",
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
-
-                                                    2 -> Toast.makeText(
-                                                        applicationContext,
-                                                        "Unexpected error. Try again later.",
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
+                                                } catch (e: Exception) {
+                                                    Toast.makeText(applicationContext, "Unexpected Error",
+                                                        Toast.LENGTH_LONG).show()
                                                 }
-                                            } catch (e: Exception) {
-                                                Toast.makeText(
-                                                    applicationContext,
-                                                    "Unexpected error. Try again later.",
-                                                    Toast.LENGTH_LONG
-                                                ).show()
                                             }
                                         }
+                                    }
                                 },
                                 modifier = Modifier
                                     .padding(16.dp),

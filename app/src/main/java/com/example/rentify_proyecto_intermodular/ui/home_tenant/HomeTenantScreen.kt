@@ -25,13 +25,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.getOwnerUser
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 @Composable
 fun HomeTenantScreen(
@@ -40,9 +45,28 @@ fun HomeTenantScreen(
     leasedProperty: Property
 ) {
     var services by remember { mutableStateOf<Service?>(null) }
-    LaunchedEffect(leasedProperty.id) {
-        services = getServicesByProperty(leasedProperty.id)
+    var owner by remember { mutableStateOf<User?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(leasedProperty) {
+        isLoading = true
+        try {
+            coroutineScope {
+                val servicesDeferred = async {
+                    getServicesByProperty(leasedProperty.id)
+                }
+                val ownerDeferred = async {
+                    getOwnerUser(leasedProperty.owner_fk)
+                }
+
+                services = servicesDeferred.await()
+                owner = ownerDeferred.await()
+            }
+        } finally {
+            isLoading = false
+        }
     }
+
 
     Box(
         modifier = modifier
@@ -50,50 +74,77 @@ fun HomeTenantScreen(
             .background(MaterialTheme.colorScheme.onSecondary),
         contentAlignment = Alignment.Center
     ) {
-        Card(
+        Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(16.dp)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                .align(Alignment.TopCenter),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
+
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.scrim
+            )
+            Text(
+                text = stringResource(R.string.home_tenant_slogan, actualUser.firstName),
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Card(
                 modifier = Modifier
-                    .padding(16.dp),
-                verticalAlignment = Alignment.Top
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Home,
-                    contentDescription = null,
+                Row(
                     modifier = Modifier
-                        .size(48.dp)
-                        .padding(end = 16.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Text(
-                        text = "${actualUser.firstName} ${actualUser.lastName}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                    Icon(
+                        imageVector = Icons.Filled.Home,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .padding(end = 16.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
-                    Text(
-                        text = leasedProperty.address,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = leasedProperty.alquiler.toString(),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = services?.included ?: "No disponible",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        if (isLoading) {
+                            Text(text = stringResource(R.string.wait))
+                        } else {
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
+                                        "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
+                                        "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_adress_placeholder)} ${leasedProperty.address}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                    }
                 }
             }
         }
