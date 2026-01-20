@@ -34,7 +34,8 @@ import com.example.rentify_proyecto_intermodular.ui.incidents_owner.IncidentsOwn
 @Composable
 fun MainScreen(
     actualUser: User,
-    onUserLogout: () -> Unit
+    onUserLogout: () -> Unit,
+    onUserUpdate: (User)->Unit
 ){
     val navController = rememberNavController()
     val startDestination = Destinations.HOME
@@ -91,13 +92,15 @@ fun MainScreen(
                     OwnerSettingsScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
-                        onUserLogout = onUserLogout
+                        onUserLogout = onUserLogout,
+                        onUserUpdate = onUserUpdate
                     )
                 } else if (actualUser.leasedProperty != null) {
                     TenantSettingsScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
-                        onUserLogout = onUserLogout
+                        onUserLogout = onUserLogout,
+                        onUserUpdate = onUserUpdate
                     )
                 } else {
                     Text(text = "ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")

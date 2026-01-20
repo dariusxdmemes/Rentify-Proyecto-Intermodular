@@ -73,6 +73,9 @@ class MainActivity : ComponentActivity() {
                                 onUserLogout = {
                                     actualUser = null
                                     navController.navigate("Login")
+                                },
+                                onUserUpdate = { user ->
+                                    actualUser = user
                                 }
                             )
                         }

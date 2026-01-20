@@ -29,7 +29,8 @@ SETTINGS TO IMPLEMENT:
 fun TenantSettingsScreen(
     modifier: Modifier = Modifier,
     actualUser: User,
-    onUserLogout: () -> Unit
+    onUserLogout: () -> Unit,
+    onUserUpdate: (User)->Unit
 ){
     val context = LocalContext.current
 
@@ -51,7 +52,7 @@ fun TenantSettingsScreen(
         )
 
         Column {
-            UpdateAccountInfoCard(actualUser, context)
+            UpdateAccountInfoCard(actualUser, context, onUserUpdate)
             LogoutCard(onUserLogout)
             DeleteAccountCard()
         }

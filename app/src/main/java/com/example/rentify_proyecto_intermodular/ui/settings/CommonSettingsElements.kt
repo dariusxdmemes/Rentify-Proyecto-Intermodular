@@ -21,13 +21,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.updateUser
 import com.example.rentify_proyecto_intermodular.data.model.User
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsCard(title: String, content: @Composable ()->Unit){
@@ -78,7 +82,13 @@ fun SettingsCard(title: String, content: @Composable ()->Unit){
 }
 
 @Composable
-fun UpdateAccountInfoCard(actualUser: User, context: Context){
+fun UpdateAccountInfoCard(
+    actualUser: User,
+    context: Context,
+    onUserUpdate: (User)->Unit
+){
+    val coroutineScope = rememberCoroutineScope()
+
     SettingsCard(
         title = stringResource(R.string.settings_update_card)
     ) {
@@ -129,9 +139,32 @@ fun UpdateAccountInfoCard(actualUser: User, context: Context){
         Button(
             onClick = {
                 if (newPassword == confirmNewPassword){
-                    // TODO hacer la llamada a la API para actualizar el usuario
-                    // Los parámetros son: firstName, lastName, phoneNumber, email, newPassword, oldPassword
-                    Toast.makeText(context, "Update user info yet to be implemented", Toast.LENGTH_LONG).show()
+                    coroutineScope.launch {
+                        try {
+                            val newUser = updateUser(
+                                user = User (
+                                    actualUser.id,
+                                    firstName,
+                                    lastName,
+                                    phoneNumber,
+                                    email,
+                                    oldPassword
+                                ),
+                                actualpassword = oldPassword,
+                                newpassword = newPassword
+                            )
+
+                            if (newUser == null) {
+                                Toast.makeText(context, "Ha habido un error inesperado", Toast.LENGTH_LONG).show()
+                            }
+                            else {
+                                Toast.makeText(context, "Usuario actualizado correctamente!", Toast.LENGTH_LONG).show()
+                                onUserUpdate(newUser)
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Error: ${e.message}.", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
                 else {
                     Toast.makeText(context, "New passwords don't match!", Toast.LENGTH_LONG).show()
