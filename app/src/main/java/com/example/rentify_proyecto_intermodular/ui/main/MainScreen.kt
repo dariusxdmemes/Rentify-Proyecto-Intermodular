@@ -87,22 +87,23 @@ fun MainScreen(
             }
 
             composable (Destinations.OPTIONS.route) {
-                if (actualUser.ownedProperty != null){
+                if (actualUser.ownedProperty != null) {
                     OwnerSettingsScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
                         onUserLogout = onUserLogout
                     )
-                }
-                else if (actualUser.leasedProperty != null) {
+                } else if (actualUser.leasedProperty != null) {
                     TenantSettingsScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
                         onUserLogout = onUserLogout
                     )
+                } else {
+                    Text(text = "ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
                 }
-                else {
-                    Text(text="ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
+            }
+
             composable(Destinations.INCIDENTS.route) {
                 if (actualUser.ownedProperty != null) {
                     IncidentsOwnerScreen(
