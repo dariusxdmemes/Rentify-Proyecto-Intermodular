@@ -28,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.deleteUser
 import com.example.rentify_proyecto_intermodular.data.api.updateUser
 import com.example.rentify_proyecto_intermodular.data.model.User
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -195,7 +197,9 @@ fun LogoutCard(onUserLogout: () -> Unit) {
 }
 
 @Composable
-fun DeleteAccountCard(){
+fun DeleteAccountCard(actualUser: User, onUserLogout: () -> Unit, context: Context){
+    val coroutineScope = rememberCoroutineScope()
+
     SettingsCard(
         title = stringResource(R.string.settings_delete_account_card)
     ) {
@@ -204,7 +208,19 @@ fun DeleteAccountCard(){
         )
         Button(
             onClick = {
-                // TODO implement delete account
+                coroutineScope.launch {
+                    val code = deleteUser(actualUser.id)
+
+                    when (code) {
+                        0 -> {
+                            Toast.makeText(context, "Account deleted successfully", Toast.LENGTH_LONG).show()
+                            delay(5000)
+                            onUserLogout()
+                        }
+                        1 -> Toast.makeText(context, "Unexpected error: this user wasn't found in the database", Toast.LENGTH_LONG).show()
+                        2 -> Toast.makeText(context, "Unexpected error.", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         ){
             Text(text = stringResource(R.string.settings_delete_account_button))

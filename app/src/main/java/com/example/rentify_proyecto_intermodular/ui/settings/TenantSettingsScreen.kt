@@ -54,7 +54,7 @@ fun TenantSettingsScreen(
         Column {
             UpdateAccountInfoCard(actualUser, context, onUserUpdate)
             LogoutCard(onUserLogout)
-            DeleteAccountCard()
+            DeleteAccountCard(actualUser, onUserLogout, context)
         }
     }
 }
