@@ -14,9 +14,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
@@ -83,7 +85,7 @@ fun MainScreen(
                     )
                 }
                 else {
-                    Text(text="ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
+                    Text(text = stringResource(R.string.aux))
                 }
             }
 
@@ -103,7 +105,7 @@ fun MainScreen(
                         onUserUpdate = onUserUpdate
                     )
                 } else {
-                    Text(text = "ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)")
+                    Text(text = stringResource(R.string.aux))
                 }
             }
 

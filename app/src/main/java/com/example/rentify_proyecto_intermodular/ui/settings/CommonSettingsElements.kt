@@ -150,11 +150,14 @@ fun UpdateAccountInfoCard(
                                     lastName,
                                     phoneNumber,
                                     email,
-                                    oldPassword
+                                    oldPassword,
+                                    actualUser.ownedProperty,
+                                    actualUser.leasedProperty
                                 ),
                                 actualpassword = oldPassword,
                                 newpassword = newPassword
                             )
+
 
                             if (newUser == null) {
                                 Toast.makeText(context, "Ha habido un error inesperado", Toast.LENGTH_LONG).show()
