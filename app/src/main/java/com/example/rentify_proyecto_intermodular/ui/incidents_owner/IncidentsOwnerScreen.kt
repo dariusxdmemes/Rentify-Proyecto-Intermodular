@@ -103,19 +103,6 @@ fun PropertyIncidentsCard(property: Property) {
         }
     }
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.scrim
-        ),
-        border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.scrim
-        )
-    ) {
         if (isLoading) {
             Text(
                 text = "Cargando incidencias para ${property.address}...",
@@ -129,11 +116,25 @@ fun PropertyIncidentsCard(property: Property) {
         } else {
             Column {
                 incidents.forEach { incident ->
-                    IncidentItem(incident = incident, property = property)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.scrim
+                        ),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.scrim
+                        )
+                    ){
+                        IncidentItem(incident = incident, property = property)
+                    }
                 }
             }
         }
-    }
+
 }
 
 
@@ -157,7 +158,7 @@ fun IncidentItem(incident: Incident, property: Property) {
             modifier = Modifier
                 .padding(start = 10.dp, end = 10.dp)
         )
-
+    }
         AnimatedVisibility(visible = expanded) {
             Column(
                 modifier = Modifier
@@ -196,5 +197,5 @@ fun IncidentItem(incident: Incident, property: Property) {
             modifier = Modifier
                 .padding(start = 10.dp, end = 10.dp)
         )
-    }
+
 }
