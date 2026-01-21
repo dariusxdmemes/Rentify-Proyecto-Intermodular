@@ -52,7 +52,5 @@
     <string name="incidents_owner_issue_label">Issue: </string>
     <string name="incidents_owner_descripition_label">Description: </string>
 
-    <string name="incidents_tenant_slogan">Is something wrong %s ?</string>
-    <string name="incidents_is_empty">Nothing to see here…</string>
-    <string name="incidents_create_button">Create new incident</string>
+    <string name="aux">ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)</string>
 </resources>

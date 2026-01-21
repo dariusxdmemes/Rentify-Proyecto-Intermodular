@@ -29,7 +29,8 @@ SETTINGS TO IMPLEMENT:
 fun OwnerSettingsScreen(
     modifier: Modifier = Modifier,
     actualUser: User,
-    onUserLogout: () -> Unit
+    onUserLogout: () -> Unit,
+    onUserUpdate: (User)->Unit
 ){
     val context = LocalContext.current
 
@@ -51,9 +52,9 @@ fun OwnerSettingsScreen(
         )
 
         Column {
-            UpdateAccountInfoCard(actualUser, context)
+            UpdateAccountInfoCard(actualUser, context, onUserUpdate)
             LogoutCard(onUserLogout)
-            DeleteAccountCard()
+            DeleteAccountCard(actualUser, onUserLogout, context)
         }
     }
 }

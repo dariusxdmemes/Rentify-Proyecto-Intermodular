@@ -1,5 +1,6 @@
 package com.example.rentify_proyecto_intermodular.data.api
 
+import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
@@ -12,7 +13,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
-import java.net.URLEncoder
 
 const val HOST = "10.0.2.2" // The PC
 //const val HOST = "raspberrypi.local" // The Raspberry
@@ -380,8 +380,8 @@ suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): 
                         phoneNumber = jsonObject.getString("phone_number"),
                         email = jsonObject.getString("email"),
                         password = "",
-                        ownedProperty = null,
-                        leasedProperty = null
+                        ownedProperty = user.ownedProperty,
+                        leasedProperty = user.leasedProperty
                     )
 
                 }
@@ -425,6 +425,61 @@ suspend fun deleteUser(id_user: Int): Int {
             }
 
             code
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
+    }
+}
+
+/**
+ * Returns the incidents of a property
+ * @param propertyId Property ID
+ * @return List of incidents (can be empty)
+ * @throws IOException Network or unexpected error
+ */
+suspend fun getIncidentsByProperty(propertyId: Int): List<Incident> {
+    try {
+        return withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/property/incidents/$propertyId")
+                .get()
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Unexpected error")
+                }
+
+                val body = response.body?.string() ?: throw IOException("Empty body")
+                val jsonArray = JSONArray(body)
+
+                List(jsonArray.length()) { i ->
+                    val incident = jsonArray.getJSONObject(i)
+                    val tenant: User? =
+                        if (incident.has("tenant")) {
+                            val propJson = incident.getJSONObject("tenant")
+                            User(
+                                id = propJson.getInt("id"),
+                                firstName = propJson.getString("first_name"),
+                                lastName = propJson.getString("last_name"),
+                                phoneNumber = propJson.getString("phone_number"),
+                                email = propJson.getString("email"),
+                                password = "",
+                                ownedProperty = null,
+                                leasedProperty = null
+                            )
+                        } else null
+                    Incident(
+                        id = incident.getInt("id"),
+                        issue = incident.getString("issue"),
+                        description = incident.getString("description"),
+                        property_id = incident.getInt("property_id"),
+                        tenant = tenant,
+                        owner_id = incident.getInt("owner_id")
+
+                    )
+                }
+            }
         }
     } catch (e: Exception) {
         throw IOException("Unexpected error")
