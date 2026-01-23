@@ -1,7 +1,11 @@
 <resources>
+    <!-- App -->
     <string name="app_name">Rentify</string>
     <string name="app_slogan_login">Manage homes and people with love!</string>
     <string name="app_slogan_register">Efficiency starts from home</string>
+    <string name="wait">Cargando datos…</string>
+
+    <!-- Login -->
     <string name="radio_tenant_login">I am a tenant</string>
     <string name="radio_owner_login">I am an owner</string>
     <string name="email_label_textfield">Email</string>
@@ -9,6 +13,8 @@
     <string name="login_label_button">Login</string>
     <string name="signup_clickable_text">Not a user yet? Click here to sign up</string>
     <string name="error_mail_field">Error: mail format is incorrect.</string>
+
+    <!-- Register -->
     <string name="register_first_name_label">First Name</string>
     <string name="register_last_name_label">Last Name</string>
     <string name="register_phone_label">Phone number</string>
@@ -16,9 +22,27 @@
     <string name="register_passwd_label">Password</string>
     <string name="register_confirm_passwd_label">Confirm password</string>
     <string name="register_button_text">Register</string>
+    <string name="register_all_fields_required">All fields are required</string>
+    <string name="register_invalid_email_format">Invalid email format</string>
+    <string name="register_invalid_phone_format">Invalid phone format</string>
+    <string name="register_invalid_password_format">Password must be at least 6 characters long</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="register_success">Register successful</string>
+    <string name="register_user_already_exists">A user with that email already exists</string>
+    <string name="register_unexpected_error">An unexpected error ocurred. Try again later.</string>
+
+    <!-- Home -->
     <string name="home_tenant_slogan">Hello, %s</string>
     <string name="home_owner_slogan">Welcome %s</string>
+    <string name="home_tenant_name_placeholder">Owner: </string>
+    <string name="home_tenant_adress_placeholder">Address: </string>
+    <string name="home_tenant_price">Rent: </string>
+    <string name="home_tenant_services">Services included: </string>
+    <string name="home_tenant_unavalible_services">No services included</string>
+    <string name="home_tenant_unavalible_owner">Owner not available</string>
+    <string name="euro">€</string>
 
+    <!-- Settings -->
     <string name="settings_slogan">Let\'s customize</string>
     <string name="settings_update_card">Update Account Information</string>
     <string name="settings_logout_card">Logout</string>
@@ -31,30 +55,21 @@
     <string name="settings_delete_account_button">Yes, delete my account</string>
     <string name="settings_logout_text">By pressing the button below, you will logout of your account. You will be redirected to login screen. You will have to login again to keep using the app</string>
     <string name="settings_delete_account_text">By pressing the button below, you will completely delete your account. All of your information will be permanently deleted and will not be able to be recovered. Are you sure?</string>
-    
-    <string name="home_tenant_name_placeholder">Owner: </string>
-    <string name="home_tenant_adress_placeholder">Address: </string>
-    <string name="home_tenant_price">Rent: </string>
-    <string name="home_tenant_services">Services included: </string>
-    <string name="home_tenant_unavalible_services">No services included</string>
-    <string name="home_tenant_unavalible_owner">Owner not available</string>
 
-    <string name="euro">€</string>
-
-    <string name="wait">Cargando datos…</string>
-
-    <string name="navigation_login">Login</string>
-    <string name="navigation_register">Register</string>
-    <string name="navigation_home_owner">HomeOwner</string>
-
+    <!-- Incidents -->
     <string name="incidents_owner_pending_slogan">You have pending incidents</string>
     <string name="incidents_owner_default_slogan">Everything is fine, yay!</string>
     <string name="incidents_owner_issue_label">Issue: </string>
     <string name="incidents_owner_descripition_label">Description: </string>
-
     <string name="incidents_tenant_slogan">Is something wrong %s ?</string>
     <string name="incidents_is_empty">Nothing to see here…</string>
     <string name="incidents_create_button">Create new incident</string>
 
+    <!-- Navigation -->
+    <string name="navigation_login">Login</string>
+    <string name="navigation_register">Register</string>
+    <string name="navigation_home_owner">HomeOwner</string>
+
+    <!-- William -->
     <string name="aux">ownedProperty y leasedProperty de actualUser son las dos null, y por tanto no se puede determinar si el usuario es propietario o inquilino (PREGUNTAR A GUILLE!)</string>
 </resources>
