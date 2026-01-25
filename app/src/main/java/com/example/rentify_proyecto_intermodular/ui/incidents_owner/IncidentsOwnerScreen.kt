@@ -104,6 +104,12 @@ fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
                 * - La api no esta arrancada (no se puede hacer el fetch).
                 * - El usuario no tiene ninguna incidencia. (no hay datos en la tabla). */
 
+                Text(
+                    text = stringResource(R.string.incidents_owner_pending_slogan),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .padding(bottom = 10.dp)
+                )
                 incidents!!.forEach { incident ->
                     var expanded by remember { mutableStateOf(false) }
                     Card(
