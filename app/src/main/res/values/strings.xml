@@ -61,6 +61,12 @@
     <string name="incidents_owner_default_slogan">Everything is fine, yay!</string>
     <string name="incidents_owner_issue_label">Issue: </string>
     <string name="incidents_owner_descripition_label">Description: </string>
+    <string name="incidents_owner_loading_label">Loading incidents…</string>
+    <string name="incidents_owner_on_error_req">Error loading data, please try again later.</string>
+    <string name="incidents_owner_tenant_name_ph">Tenant Name</string>
+    <string name="incidents_owner_tenant_surname_ph">Tenant Surname</string>
+    <string name="incidents_owner_tenant_issue_ph">Incident Issue</string>
+
     <string name="incidents_tenant_slogan">Is something wrong %s ?</string>
     <string name="incidents_is_empty">Nothing to see here…</string>
     <string name="incidents_create_button">Create new incident</string>
