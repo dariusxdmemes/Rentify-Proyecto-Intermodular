@@ -41,17 +41,6 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
 
     var incidencias by remember { mutableStateOf<MutableList<Incident>>(mutableListOf()) }
 
-    incidencias.add(
-        Incident(
-            id = 0,
-            issue = "Broken Fridge",
-            description = "My fridge is borken",
-            property_id = 1,
-            tenant = null,
-            owner_id = 1
-        )
-    )
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -89,15 +78,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                     expanded = false,
                     icon = null
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        /* todo Implementar textfields para el INSERT de la NUEVA INCIDENCIA. */
-                    }
+                    // TODO DARIUS: PONER AQUÍ EL CONTENIDO DEL ANIMATEDVISIBILITY (NO EL PROPIO ANIMATEDVISIBILITY) (SON LOS TEXT FIELDS PARA INSERTAR UNA INCIDENCIA)
                 }
             } else {
                 CommonCard(
