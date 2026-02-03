@@ -35,6 +35,7 @@ import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
@@ -93,58 +94,38 @@ fun HomeTenantScreen(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Card(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            CommonCard (
+                title = leasedProperty.address,
+                icon = Icons.Default.Home,
+                expanded = false,
             ) {
-                Row(
+                Column(
                     modifier = Modifier
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.Top
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Home,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .padding(end = 16.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        if (isLoading) {
-                            Text(text = stringResource(R.string.wait))
-                        } else {
-                            Text(
-                                text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
-                                        "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
-                                        "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "${stringResource(R.string.home_tenant_adress_placeholder)} ${leasedProperty.address}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-
+                    if (isLoading) {
+                        Text(text = stringResource(R.string.wait))
+                    } else {
+                        Text(
+                            text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
+                                    "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
+                                    "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
+
                 }
             }
         }

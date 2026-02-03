@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
@@ -32,6 +34,7 @@ import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.getIncidentsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 
 @Composable
 fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
@@ -110,50 +113,49 @@ fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
                     modifier = Modifier
                         .padding(bottom = 10.dp)
                 )
-                incidents!!.forEach { incident ->
-                    var expanded by remember { mutableStateOf(false) }
-                    Card(
-                        onClick = {
-                            expanded = !expanded
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.scrim
-                        ),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.scrim
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp)
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    items(incidents!!) { incident ->
+                        CommonCard (
+                            title = incident.issue,
+                            expanded = false,
+                            icon = null
                         ) {
-                            Text(
-                                text = incident.tenant?.firstName ?: stringResource(R.string.incidents_owner_tenant_name_ph)
-                            )
-                            Text(
-                                text = incident.tenant?.lastName ?: stringResource(R.string.incidents_owner_tenant_surname_ph)
-                            )
-                            Text(
-                                text = incident.issue
-                            )
-                        }
-                        AnimatedVisibility(visible = expanded) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 12.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                    .padding(5.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(bottom = 5.dp)
+                                        .padding(horizontal = 3.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.incidents_owner_tenant_label),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .padding(horizontal = 3.dp),
+                                        text =
+                                            if (incident.tenant == null) stringResource(R.string.incidents_owner_tenant_name_ph)
+                                            else incident.tenant.firstName + " " + incident.tenant.lastName
+
+                                    )
+                                }
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 3.dp)
                                 ) {
                                     Text(
                                         text = stringResource(R.string.incidents_owner_issue_label),
@@ -161,19 +163,26 @@ fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
                                     )
                                     Text(
                                         modifier = Modifier
-                                            .padding(start = 5.dp, end = 5.dp),
+                                            .padding(horizontal = 3.dp),
                                         text = incident.issue
                                     )
                                 }
-                                Text(
+
+                                Row(
                                     modifier = Modifier
-                                        .fillMaxWidth(),
-                                    text = stringResource(R.string.incidents_owner_descripition_label),
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = incident.description
-                                )
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 3.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.incidents_owner_descripition_label),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .padding(horizontal = 3.dp),
+                                        text = incident.description
+                                    )
+                                }
                             }
                         }
                     }

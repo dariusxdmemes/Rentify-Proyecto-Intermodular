@@ -145,7 +145,6 @@ suspend fun login(email: String, password: String, type: String): User? {
                         //not owner or tenant
                         user = null
                     }
-
                 }
             }
 
