@@ -35,6 +35,7 @@ import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
@@ -91,70 +92,34 @@ fun HomeOwnerScreen(
                 }
 
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                CommonCard(
+                    title = "${property.address}, ${property.ciudad}, ${property.pais}",
+                    icon = Icons.Default.Home,
+                    expanded = false,
                 ) {
-                    Row(
-                        modifier = Modifier.padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(30.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(start = 5.dp)
-                                .scale(2f)
-                        )
-                        Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
-                            Text(text = property.address)
-                            Text(text = "${property.ciudad}, ${property.pais}")
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                IconButton(onClick = { expanded = !expanded }) {
-                                    Icon(
-                                        imageVector = if (expanded)
-                                            Icons.Default.KeyboardArrowUp
-                                        else
-                                            Icons.Default.KeyboardArrowDown,
-                                        contentDescription = null
-                                    )
+                        if (isLoading) {
+                            Text(text = "Cargando datos...")
+                        } else {
+                            if (tenants.isEmpty()) {
+                                Text(text = "Inquilino: Sin inquilinos")
+                            } else {
+                                tenants.forEach { tenant ->
+                                    Text(text = "Inquilino: ${tenant.firstName} ${tenant.lastName}")
                                 }
                             }
 
-                            AnimatedVisibility(visible = expanded) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 12.dp)
-                                ) {
-                                    if (isLoading) {
-                                        Text(text = "Cargando datos...")
-                                    } else {
-                                        if (tenants.isEmpty()) {
-                                            Text(text = "Inquilino: Sin inquilinos")
-                                        } else {
-                                            tenants.forEach { tenant ->
-                                                Text(text = "Inquilino: ${tenant.firstName} ${tenant.lastName}")
-                                            }
-                                        }
-
-                                        Text(text = "Precio/mes: ${property.alquiler}")
-                                        Text(text = "Servicios: ${services?.included ?: "No disponible"}")
-                                        Text(text = "No incluye: ${services?.excluded ?: "No disponible"}")
-                                    }
-                                }
-                            }
+                            Text(text = "Precio/mes: ${property.alquiler}")
+                            Text(text = "Servicios: ${services?.included ?: "No disponible"}")
+                            Text(text = "No incluye: ${services?.excluded ?: "No disponible"}")
                         }
                     }
                 }
             }
         }
-
     }
 }

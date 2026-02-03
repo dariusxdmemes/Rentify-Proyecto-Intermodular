@@ -34,11 +34,23 @@ import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 
 @Composable
 fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
 
-    var incidencias by remember { mutableStateOf<MutableList<Incident>?>(mutableListOf()) }
+    var incidencias by remember { mutableStateOf<MutableList<Incident>>(mutableListOf()) }
+
+    incidencias.add(
+        Incident(
+            id = 0,
+            issue = "Broken Fridge",
+            description = "My fridge is borken",
+            property_id = 1,
+            tenant = null,
+            owner_id = 1
+        )
+    )
 
     Column(
         modifier = modifier
@@ -72,93 +84,27 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
 
             if (incidencias.isNullOrEmpty()) {
 
-                var expanded by remember { mutableStateOf(false) }
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.scrim
-                    ),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.scrim
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 5.dp, bottom = 5.dp),
-                            text = stringResource(R.string.incidents_is_empty),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Button(
-                            modifier = Modifier
-                                .padding(bottom = 5.dp),
-                            onClick = {
-                                expanded = !expanded
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                contentColor = MaterialTheme.colorScheme.scrim
-                            )
-                        ) {
-                            Text(
-                                text = stringResource(R.string.incidents_create_button)
-                            )
-                        }
-                        AnimatedVisibility(visible = expanded) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp),
-                            ) {
-                                /* todo Implementar textfields para el INSERT de la NUEVA INCIDENCIA. */
-                            }
-                        }
-                    }
-                }
-            } else {
-                var exapanded by remember { mutableStateOf(false) }
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp)
-                        .clickable(
-                            onClick = {
-                                exapanded = !exapanded
-                            }
-                        ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.scrim
-                    ),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.scrim
-                    )
+                CommonCard(
+                    title = stringResource(R.string.incidents_create_button),
+                    expanded = false,
+                    icon = null
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(5.dp)
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            /* todo MOSTRAR LA (INCIDENT.ISSUE) EN ESTE TEXT */
-                            text = "Issue: Broken microwave!!!",
-                            modifier = Modifier
-                                .padding(5.dp)
-                        )
+                        /* todo Implementar textfields para el INSERT de la NUEVA INCIDENCIA. */
                     }
                 }
-                AnimatedVisibility(visible = exapanded) {
+            } else {
+                CommonCard(
+                    title = "Broken Microwave", // TODO mostrar incident.issue
+                    expanded = false,
+                    icon = null
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -166,6 +112,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
+                            modifier = Modifier.padding(horizontal = 12.dp),
                             /* todo MOSTRAR LA (INCIDENT.DESCRIPTION) EN ESTE TEXT */
                             text = "Hi, my microwave is not microwaving anymore, pls help!"
                         )

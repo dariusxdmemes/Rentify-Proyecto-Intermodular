@@ -59,6 +59,7 @@
     <!-- Incidents -->
     <string name="incidents_owner_pending_slogan">You have pending incidents</string>
     <string name="incidents_owner_default_slogan">Everything is fine, yay!</string>
+    <string name="incidents_owner_tenant_label">Tenant:</string>
     <string name="incidents_owner_issue_label">Issue: </string>
     <string name="incidents_owner_descripition_label">Description: </string>
     <string name="incidents_owner_loading_label">Loading incidents…</string>

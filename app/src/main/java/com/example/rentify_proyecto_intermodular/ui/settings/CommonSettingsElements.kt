@@ -13,8 +13,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.deleteUser
 import com.example.rentify_proyecto_intermodular.data.api.updateUser
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,46 +42,17 @@ import kotlinx.coroutines.launch
 fun SettingsCard(title: String, content: @Composable ()->Unit){
     var expanded by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+    CommonCard (
+        title = title,
+        expanded = false,
+        icon = null
     ) {
-        Row(
-            modifier = Modifier.padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(30.dp)
-        ) {
-            Column(modifier = Modifier
+        Column(
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)) {
-                Text(text = title) // TITLE <-------------------------
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            imageVector = if (expanded)
-                                Icons.Default.KeyboardArrowUp
-                            else
-                                Icons.Default.KeyboardArrowDown,
-                            contentDescription = null
-                        )
-                    }
-                }
-
-                AnimatedVisibility(visible = expanded) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp)
-                    ) {
-                        content() // CONTENT <-------------------------
-                    }
-                }
-            }
+                .padding(all = 12.dp)
+        ) {
+            content()
         }
     }
 }
@@ -103,42 +77,50 @@ fun UpdateAccountInfoCard(
         var oldPassword by remember { mutableStateOf("") }
 
         TextField(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             value = firstName,
             onValueChange = { firstName = it },
             label = { Text(text = stringResource(R.string.register_first_name_label)) }
         )
         TextField(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             value = lastName,
             onValueChange = { lastName = it },
             label = { Text(text = stringResource(R.string.register_last_name_label)) }
         )
         TextField(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
             label = { Text(text = stringResource(R.string.register_phone_label)) }
         )
         TextField(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             value = email,
             onValueChange = { email = it },
             label = { Text(text = stringResource(R.string.register_email_label)) }
         )
         TextField(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             value = newPassword,
             onValueChange = { newPassword = it },
             label = { Text(text = stringResource(R.string.settings_new_password)) }
         )
         TextField(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             value = confirmNewPassword,
             onValueChange = { confirmNewPassword = it },
             label = { Text(text = stringResource(R.string.settings_confirm_new_password)) }
         )
         TextField(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             value = oldPassword,
             onValueChange = { oldPassword = it },
             label = { Text(text = stringResource(R.string.settings_old_password)) }
         )
 
         Button(
+            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
             onClick = {
                 if (newPassword == confirmNewPassword){
                     coroutineScope.launch {
