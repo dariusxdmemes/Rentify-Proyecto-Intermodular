@@ -13,33 +13,16 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.concurrent.thread
 
 const val HOST = "10.0.2.2" // The PC
 //const val HOST = "raspberrypi.local" // The Raspberry
 const val PORT = 8000
-
-// API TABLE NAMES
-const val USER_TABLE = "users"
-
-// USER API FIELDS
-const val ID_FIELD = "id_user"
-const val NIF_FIELD = "nif"
-const val FIRST_NAME_FIELD = "name"
-const val LAST_NAME_FIELD = "surname"
-const val PHONE_NUMBER_FIELD = "telephone"
-const val EMAIL_FIELD = "email"
-const val PASSWORD_FIELD = "password"
-const val ADDRESS_FIELD = "address_fk"
+const val BASE_URL = "http://$HOST:$PORT"
 
 // OTHER CONSTANTS
 val jsonMediaType = "application/json; charset=utf-8".toMediaType()
-
 val client: OkHttpClient = OkHttpClient()
-
-
-// =====================
-// ===== API PABLO =====
-// =====================
 
 /**
  * Checks the credentials against the API
@@ -49,7 +32,6 @@ val client: OkHttpClient = OkHttpClient()
  * @return Returns the User object on successful login, and `null` on incorrect credentials.
  * @throws IOException Throws `IOException` in case of network error
  */
-
 suspend fun login(email: String, password: String, type: String): User? {
     try {
         return withContext(Dispatchers.IO){
@@ -155,14 +137,12 @@ suspend fun login(email: String, password: String, type: String): User? {
     }
 }
 
-
-
 /**
  * Registers a user in the database
  * @param user The `User` object that needs to be registered. ID field is ignored.
  * @return An status code. 0: success. 1: duplicated email. 2: unexpected error.
+ * @throws IOException on network error
  */
-
 suspend fun registerUser(user: User): Int {
     try {
         return withContext(Dispatchers.IO){
@@ -284,7 +264,6 @@ suspend fun getServicesByProperty(propertyId: Int): Service? {
     }
 }
 
-
 /**
  * Returns the user owner of a property by his user id
  * @param ownerFK User ID
@@ -331,14 +310,11 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
     }
 }
 
-
-
 /**
  * Update a user in the database
  * @param (user, actualpassword, newpassword).
  * @return return de actual user with his information updated.
  */
-
 suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): User? {
     try {
         return withContext(Dispatchers.IO){
@@ -392,13 +368,11 @@ suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): 
     }
 }
 
-
 /**
  * Delete a user in the database
  * @param id_user
  * @return An status code. 0: success. 1: user not found. 2: unexpected error.
  */
-
 suspend fun deleteUser(id_user: Int): Int {
     try {
         return withContext(Dispatchers.IO){
@@ -482,5 +456,130 @@ suspend fun getIncidentsByProperty(propertyId: Int): List<Incident> {
         }
     } catch (e: Exception) {
         throw IOException("Unexpected error")
+    }
+}
+
+/**
+ * Registers a property in the database
+ * @param property The `Property` object that needs to be registered. ID field is ignored.
+ * @throws IOException on network error
+ */
+suspend fun registerProperty (property: Property) {
+    try {
+        return withContext(Dispatchers.IO){
+            var code = 1
+
+            val jsonBody = """
+                {
+                    "address": "${property.address}",
+                    "owner_fk": "${property.owner_fk}",
+                    "ciudad": "${property.address}",
+                    "pais": "${property.pais}",
+                    "alquiler": "${property.alquiler}"
+                }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+            val request = Request.Builder()
+                .url("$BASE_URL/property/register")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful){
+                    code = 1
+                }
+                else {
+                    code = 0 // success
+                }
+            }
+
+            code
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
+    }
+}
+
+/**
+ * Registers a property in the database
+ * @param property The `Property` object that needs to be registered. ID field is ignored.
+ * @throws IOException on network error
+ */
+suspend fun createIncident (incident: Incident) {
+    if (incident.tenant == null){
+        throw IOException("Incident's tenant is null.")
+    }
+
+    try {
+        return withContext(Dispatchers.IO){
+            val jsonBody = """
+                {
+                    "asunto": "${incident.issue}",
+                    "descrip": "${incident.description}",
+                    "id_owner": "${incident.owner_id}",
+                    "id_tenant": "${incident.tenant.id}",
+                    "id_property": "${incident.property_id}"
+                }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+            val request = Request.Builder()
+                .url("$BASE_URL/incidents/create")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful){
+                    throw IOException("Response unsuccessful.")
+                }
+            }
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error.")
+    }
+}
+
+/**
+ * Binds a tenant to a specific property
+ * @param idProperty The ID of the Property
+ * @param idTenant The ID of the Tenant
+ * @return A status code: 0 = success; 1 = tenant missing or already registered
+ * @throws IOException on network error
+ */
+suspend fun bindTenantToProperty(idProperty: Int, tenantEmail: String): Int {
+    try {
+        return withContext(Dispatchers.IO){
+            var code = 1
+
+            val jsonBody = """
+                {
+                    "property_fk": "$idProperty",
+                    "email": "$tenantEmail"
+                }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+            val request = Request.Builder()
+                .url("$BASE_URL/property/tenant/register")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful){
+                    code = 0
+                }
+                else if (response.code == 404){
+                    code = 1
+                }
+                else {
+                    throw IOException("Response unsuccessful")
+                }
+            }
+
+            code
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error.")
     }
 }
