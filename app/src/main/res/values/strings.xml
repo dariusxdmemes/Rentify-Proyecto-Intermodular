@@ -67,6 +67,9 @@
     <string name="incidents_owner_tenant_name_ph">Tenant Name</string>
     <string name="incidents_owner_tenant_surname_ph">Tenant Surname</string>
     <string name="incidents_owner_tenant_issue_ph">Incident Issue</string>
+    <string name="incidents_edit_incident_button_title">Edit incident</string>
+    <string name="incidents_resolve_incident_button">Resolve incident</string>
+    <string name="incidents_new_incident_fab_title">Create incident</string>
 
     <string name="incidents_tenant_slogan">Is something wrong %s ?</string>
     <string name="incidents_is_empty">Nothing to see here…</string>
