@@ -37,6 +37,7 @@ import com.example.rentify_proyecto_intermodular.ui.theme.RentifyProyectoIntermo
 
 @Composable
 fun CommonCard(
+    modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector?,
     expanded: Boolean,
@@ -45,9 +46,8 @@ fun CommonCard(
     var expandedState by remember { mutableStateOf(expanded) }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
+        modifier = modifier
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -90,14 +90,8 @@ fun CommonCard(
             }
 
             AnimatedVisibility(visible = expandedState) {
-                Box (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    content()
-                }
+                content()
             }
-
         }
     }
 }
