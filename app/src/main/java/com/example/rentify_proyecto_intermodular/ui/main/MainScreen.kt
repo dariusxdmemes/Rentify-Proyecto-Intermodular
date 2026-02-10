@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.model.Type
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
@@ -72,21 +73,22 @@ fun MainScreen(
             startDestination = startDestination.route
         ){
             composable(Destinations.HOME.route) {
-                if (actualUser.ownedProperty != null){ // If ownedProperty is not null, we assume it is an owner
-                    HomeOwnerScreen(
-                        modifier = Modifier.padding(contentPadding),
-                        actualUser = actualUser
-                    )
-                }
-                else if (actualUser.leasedProperty != null){ // If leasedProperty is not null, we assume it is an tenant
-                    HomeTenantScreen(
-                        modifier = Modifier.padding(contentPadding),
-                        actualUser = actualUser,
-                        leasedProperty = actualUser.leasedProperty
-                    )
-                }
-                else {
-                    Text(text = stringResource(R.string.aux))
+                when (actualUser.type) {
+                    Type.OWNER -> { // If ownedProperty is not null, we assume it is an owner
+                        HomeOwnerScreen(
+                            modifier = Modifier.padding(contentPadding),
+                            actualUser = actualUser
+                        )
+                    }
+                    Type.TENANT -> { // If leasedProperty is not null, we assume it is an tenant
+                        HomeTenantScreen(
+                            modifier = Modifier.padding(contentPadding),
+                            actualUser = actualUser
+                        )
+                    }
+                    else -> {
+                        Text(text = stringResource(R.string.aux))
+                    }
                 }
             }
 

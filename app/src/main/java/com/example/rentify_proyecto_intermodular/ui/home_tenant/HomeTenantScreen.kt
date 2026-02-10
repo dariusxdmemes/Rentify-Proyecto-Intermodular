@@ -42,9 +42,10 @@ import kotlinx.coroutines.coroutineScope
 @Composable
 fun HomeTenantScreen(
     modifier: Modifier = Modifier,
-    actualUser: User,
-    leasedProperty: Property
+    actualUser: User
 ) {
+    val leasedProperty: Property?= actualUser.leasedProperty
+
     var services by remember { mutableStateOf<Service?>(null) }
     var owner by remember { mutableStateOf<User?>(null) }
     var isLoading by remember { mutableStateOf(false) }

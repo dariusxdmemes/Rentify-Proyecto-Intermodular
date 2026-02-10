@@ -123,10 +123,7 @@ suspend fun login(email: String, password: String, type: String): User? {
                             leasedProperty
                         )
                     }
-                    if(user != null && user.ownedProperty == null && user.leasedProperty == null){
-                        //not owner or tenant
-                        user = null
-                    }
+
                 }
             }
 
@@ -154,7 +151,8 @@ suspend fun registerUser(user: User): Int {
                     "last_name": "${user.lastName}",
                     "email": "${user.email}",
                     "phone_number": "${user.phoneNumber}",
-                    "password": "${user.password}"
+                    "password": "${user.password}",
+                    "type": "tenant"
                 }
             """.trimIndent()
             val requestBody = jsonBody.toRequestBody(jsonMediaType)
@@ -217,7 +215,8 @@ suspend fun getTenantsByProperty(propertyId: Int): List<User> {
                         email = u.getString("email"),
                         password = "",
                         ownedProperty = null,
-                        leasedProperty = null
+                        leasedProperty = null,
+                        type = null
                     )
                 }
             }
@@ -298,7 +297,8 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
                         email = jsonObject.getString("email"),
                         password = "",
                         ownedProperty = null,
-                        leasedProperty = null
+                        leasedProperty = null,
+                        type = null
                     )
 
                 }
