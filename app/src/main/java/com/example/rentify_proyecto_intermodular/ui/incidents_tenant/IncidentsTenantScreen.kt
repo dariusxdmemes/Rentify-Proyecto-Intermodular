@@ -219,7 +219,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                                     }
                                 ) {
                                     Text(
-                                        text = "Edit incident"
+                                        text = stringResource(R.string.incidents_edit_incident_button_title)
                                     )
                                 }
 
@@ -230,7 +230,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                                     CommonDialog(
                                         onDismissRequest = { showDialog = !showDialog },
                                         onConfirmation = { /* todo CONFIRMAR UPDATE INCIDENT.ISSUE + INCIDENT.DESCRIP. */ },
-                                        dialogTitle = "titulo",
+                                        dialogTitle = stringResource(R.string.incidents_edit_incident_button_title),
                                         dialogText = "texto",
                                         icon = null
                                     ) {
@@ -278,7 +278,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                                             contentDescription = null
                                         )
                                         Text(
-                                            text = "Resolve incident"
+                                            text = stringResource(R.string.incidents_resolve_incident_button)
                                         )
                                     }
                                 }
