@@ -3,6 +3,7 @@ package com.example.rentify_proyecto_intermodular.ui.incidents_tenant
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.ui.common.CommonButton
 import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import com.example.rentify_proyecto_intermodular.ui.common.CommonDialog
 
@@ -64,7 +66,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                     "Pablo",
                     "Porras",
                     "677777777",
-                    "fiestas.paco@gmx.com",
+                    "pablo.porras@gmx.com",
                     "1234"
                 ),
                 1
@@ -177,12 +179,14 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                     }
                 }
             }
+            Spacer(modifier.weight(1f))
         }
         else {
             LazyColumn(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(5.dp),
+                    .padding(5.dp)
+                    .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -292,5 +296,11 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
 
             }
         }
+
+        CommonButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.incidents_new_incident_fab_title),
+            onClick = {/*TODO create an incident*/}
+        )
     }
 }
