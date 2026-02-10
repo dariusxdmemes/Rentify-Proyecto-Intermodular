@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -73,7 +75,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -89,107 +91,108 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                 .padding(bottom = 10.dp)
         )
 
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            /* Si la cantidad de incidencias es 0, mostrar "CREAR INCIDENCIA"
+        if (incidencias.isNullOrEmpty()) {
+
+            CommonCard(
+                title = stringResource(R.string.incidents_create_button),
+                expanded = false,
+                icon = null
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                ) {
+                    var issuePlaceholder by remember { mutableStateOf("") }
+                    var descriptionPlaceholder by remember { mutableStateOf("") }
+
+                    OutlinedTextField(
+                        value = issuePlaceholder,
+                        onValueChange = {
+                            issuePlaceholder = it
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(R.string.incidents_owner_issue_label)
+                            )
+                        },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.onSecondary,
+
+                            focusedLabelColor = MaterialTheme.colorScheme.scrim,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
+
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+
+                            focusedTextColor = MaterialTheme.colorScheme.scrim,
+                            unfocusedTextColor = MaterialTheme.colorScheme.scrim,
+
+                            cursorColor = MaterialTheme.colorScheme.scrim
+                        )
+                    )
+                    OutlinedTextField(
+                        value = descriptionPlaceholder,
+                        onValueChange = {
+                            descriptionPlaceholder = it
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 5.dp),
+                        minLines = 1,
+                        maxLines = 2,
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.incidents_owner_descripition_label)
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.onSecondary,
+
+                            focusedLabelColor = MaterialTheme.colorScheme.scrim,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
+
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+
+                            focusedTextColor = MaterialTheme.colorScheme.scrim,
+                            unfocusedTextColor = MaterialTheme.colorScheme.scrim,
+
+                            cursorColor = MaterialTheme.colorScheme.scrim
+                        )
+                    )
+                    ElevatedButton(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onClick = {  }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.incidents_create_button)
+                        )
+                    }
+                }
+            }
+        }
+        else {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                /* Si la cantidad de incidencias es 0, mostrar "CREAR INCIDENCIA"
             * Si hay una incidencia (o mas) activa, mostrar informacion acerca
             * de ella, ademas de poder editarla (editar asunto, editar descripcion) */
 
-            if (incidencias.isNullOrEmpty()) {
-
-                CommonCard(
-                    title = stringResource(R.string.incidents_create_button),
-                    expanded = false,
-                    icon = null
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                    ) {
-                        var issuePlaceholder by remember { mutableStateOf("") }
-                        var descriptionPlaceholder by remember { mutableStateOf("") }
-
-                        OutlinedTextField(
-                            value = issuePlaceholder,
-                            onValueChange = {
-                                issuePlaceholder = it
-                            },
-                            label = {
-                                Text(
-                                    text = stringResource(R.string.incidents_owner_issue_label)
-                                )
-                            },
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.onSecondary,
-
-                                focusedLabelColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
-
-                                focusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
-
-                                focusedTextColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedTextColor = MaterialTheme.colorScheme.scrim,
-
-                                cursorColor = MaterialTheme.colorScheme.scrim
-                            )
-                        )
-                        OutlinedTextField(
-                            value = descriptionPlaceholder,
-                            onValueChange = {
-                                descriptionPlaceholder = it
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 5.dp),
-                            minLines = 1,
-                            maxLines = 2,
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.incidents_owner_descripition_label)
-                                )
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.onSecondary,
-
-                                focusedLabelColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
-
-                                focusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
-
-                                focusedTextColor = MaterialTheme.colorScheme.scrim,
-                                unfocusedTextColor = MaterialTheme.colorScheme.scrim,
-
-                                cursorColor = MaterialTheme.colorScheme.scrim
-                            )
-                        )
-                        ElevatedButton(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            onClick = {  }
-                        ) {
-                            Text(
-                                text = stringResource(R.string.incidents_create_button)
-                            )
-                        }
-                    }
-                }
-            } else {
-                incidencias.forEach {
+                items (incidencias) { incident ->
                     CommonCard(
-                        title = it.issue,
+                        title = incident.issue,
                         expanded = false,
                         icon = null
                     ) {
@@ -203,7 +206,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
 
                             Text(
                                 modifier = Modifier.padding(horizontal = 12.dp),
-                                text = it.description
+                                text = incident.description
                             )
                             Row(
                                 modifier = Modifier
@@ -215,7 +218,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                                     modifier = Modifier
                                         .padding(top = 5.dp, bottom = 5.dp),
                                     onClick = {
-                                       showDialog = !showDialog
+                                        showDialog = !showDialog
                                     }
                                 ) {
                                     Text(
@@ -286,6 +289,7 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                         }
                     }
                 }
+
             }
         }
     }
