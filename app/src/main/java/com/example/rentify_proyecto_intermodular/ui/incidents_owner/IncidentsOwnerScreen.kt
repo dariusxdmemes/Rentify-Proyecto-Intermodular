@@ -75,7 +75,7 @@ fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -118,7 +118,7 @@ fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(incidents!!) { incident ->
                         CommonCard (

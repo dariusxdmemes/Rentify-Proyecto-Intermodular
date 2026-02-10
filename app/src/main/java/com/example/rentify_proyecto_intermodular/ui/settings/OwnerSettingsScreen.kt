@@ -37,8 +37,8 @@ fun OwnerSettingsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -51,7 +51,9 @@ fun OwnerSettingsScreen(
             style = MaterialTheme.typography.titleMedium
         )
 
-        Column {
+        Column (
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             UpdateAccountInfoCard(actualUser, context, onUserUpdate)
             LogoutCard(onUserLogout)
             DeleteAccountCard(actualUser, onUserLogout, context)
