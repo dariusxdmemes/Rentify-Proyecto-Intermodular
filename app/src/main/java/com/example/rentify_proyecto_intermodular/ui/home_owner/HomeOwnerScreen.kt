@@ -53,7 +53,9 @@ fun HomeOwnerScreen(
         )
         Text(
             text = stringResource(R.string.home_owner_slogan, actualUser?.firstName.toString()),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .padding(bottom = 40.dp)
         )
 
         LazyColumn(
