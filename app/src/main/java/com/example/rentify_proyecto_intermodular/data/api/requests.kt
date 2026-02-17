@@ -24,6 +24,12 @@ const val BASE_URL = "http://$HOST:$PORT"
 val jsonMediaType = "application/json; charset=utf-8".toMediaType()
 val client: OkHttpClient = OkHttpClient()
 
+
+
+// *************
+// *** USERS ***
+// *************
+
 /**
  * Checks the credentials against the API
  * @param email The user's email
@@ -228,43 +234,6 @@ suspend fun getTenantsByProperty(propertyId: Int): List<User> {
 }
 
 /**
- * Returns the services of a property
- * @param propertyId Property ID
- * @return Service or null if not exists
- * @throws IOException Network or unexpected error
- */
-suspend fun getServicesByProperty(propertyId: Int): Service? {
-    try {
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://$HOST:$PORT/property/services/$propertyId")
-                .get()
-                .build()
-
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw IOException("Unexpected error")
-                }
-
-                val body = response.body?.string() ?: throw IOException("Empty body")
-                val jsonObject = JSONObject(body)
-
-                if (jsonObject.isNull("included") && jsonObject.isNull("excluded")) {
-                    null
-                } else {
-                    Service(
-                        included = jsonObject.getString("included"),
-                        excluded = jsonObject.getString("excluded")
-                    )
-                }
-            }
-        }
-    } catch (e: Exception) {
-        throw IOException("Unexpected error")
-    }
-}
-
-/**
  * Returns the user owner of a property by his user id
  * @param ownerFK User ID
  * @return User or null if name and lastname are void
@@ -404,6 +373,49 @@ suspend fun deleteUser(id_user: Int): Int {
     }
 }
 
+
+
+// ******************
+// *** PROPERTIES ***
+// ******************
+
+/**
+ * Returns the services of a property
+ * @param propertyId Property ID
+ * @return Service or null if not exists
+ * @throws IOException Network or unexpected error
+ */
+suspend fun getServicesByProperty(propertyId: Int): Service? {
+    try {
+        return withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url("http://$HOST:$PORT/property/services/$propertyId")
+                .get()
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Unexpected error")
+                }
+
+                val body = response.body?.string() ?: throw IOException("Empty body")
+                val jsonObject = JSONObject(body)
+
+                if (jsonObject.isNull("included") && jsonObject.isNull("excluded")) {
+                    null
+                } else {
+                    Service(
+                        included = jsonObject.getString("included"),
+                        excluded = jsonObject.getString("excluded")
+                    )
+                }
+            }
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error")
+    }
+}
+
 /**
  * Returns the incidents of a property
  * @param propertyId Property ID
@@ -502,45 +514,6 @@ suspend fun registerProperty (property: Property) {
 }
 
 /**
- * Registers a property in the database
- * @param property The `Property` object that needs to be registered. ID field is ignored.
- * @throws IOException on network error
- */
-suspend fun createIncident (incident: Incident) {
-    if (incident.tenant == null){
-        throw IOException("Incident's tenant is null.")
-    }
-
-    try {
-        return withContext(Dispatchers.IO){
-            val jsonBody = """
-                {
-                    "asunto": "${incident.issue}",
-                    "descrip": "${incident.description}",
-                    "id_owner": "${incident.owner_id}",
-                    "id_tenant": "${incident.tenant.id}",
-                    "id_property": "${incident.property_id}"
-                }
-            """.trimIndent()
-            val requestBody = jsonBody.toRequestBody(jsonMediaType)
-
-            val request = Request.Builder()
-                .url("$BASE_URL/incidents/create")
-                .post(requestBody)
-                .build()
-
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful){
-                    throw IOException("Response unsuccessful.")
-                }
-            }
-        }
-    } catch (e: Exception) {
-        throw IOException("Unexpected error.")
-    }
-}
-
-/**
  * Binds a tenant to a specific property
  * @param idProperty The ID of the Property
  * @param idTenant The ID of the Tenant
@@ -578,6 +551,51 @@ suspend fun bindTenantToProperty(idProperty: Int, tenantEmail: String): Int {
             }
 
             code
+        }
+    } catch (e: Exception) {
+        throw IOException("Unexpected error.")
+    }
+}
+
+
+
+// *****************
+// *** INDICENTS ***
+// *****************
+
+/**
+ * Registers a property in the database
+ * @param property The `Property` object that needs to be registered. ID field is ignored.
+ * @throws IOException on network error
+ */
+suspend fun createIncident (incident: Incident) {
+    if (incident.tenant == null){
+        throw IOException("Incident's tenant is null.")
+    }
+
+    try {
+        return withContext(Dispatchers.IO){
+            val jsonBody = """
+                {
+                    "asunto": "${incident.issue}",
+                    "descrip": "${incident.description}",
+                    "id_owner": "${incident.owner_id}",
+                    "id_tenant": "${incident.tenant.id}",
+                    "id_property": "${incident.property_id}"
+                }
+            """.trimIndent()
+            val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+            val request = Request.Builder()
+                .url("$BASE_URL/incidents/create")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful){
+                    throw IOException("Response unsuccessful.")
+                }
+            }
         }
     } catch (e: Exception) {
         throw IOException("Unexpected error.")
