@@ -111,7 +111,7 @@ fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
                     text = stringResource(R.string.incidents_owner_pending_slogan),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
-                        .padding(bottom = 10.dp)
+                        .padding(bottom = 40.dp)
                 )
 
                 LazyColumn(
@@ -205,7 +205,7 @@ fun EmptyIncidentsScreen() {
                 text = stringResource(R.string.incidents_owner_default_slogan),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
-                    .padding(bottom = 10.dp)
+                    .padding(bottom = 40.dp)
             )
         Card(
             modifier = Modifier
