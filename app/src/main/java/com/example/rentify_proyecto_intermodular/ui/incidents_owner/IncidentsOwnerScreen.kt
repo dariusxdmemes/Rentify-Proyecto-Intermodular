@@ -11,8 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -111,7 +109,7 @@ fun IncidentsOwnerScreen(modifier: Modifier = Modifier, actualUser: User) {
                     text = stringResource(R.string.incidents_owner_pending_slogan),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
-                        .padding(bottom = 10.dp)
+                        .padding(bottom = 40.dp)
                 )
 
                 LazyColumn(
@@ -205,7 +203,7 @@ fun EmptyIncidentsScreen() {
                 text = stringResource(R.string.incidents_owner_default_slogan),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
-                    .padding(bottom = 10.dp)
+                    .padding(bottom = 40.dp)
             )
         Card(
             modifier = Modifier
