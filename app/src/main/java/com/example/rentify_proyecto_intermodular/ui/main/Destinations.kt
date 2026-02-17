@@ -16,6 +16,5 @@ enum class Destinations(
 ) {
     HOME("Home", Icons.Default.Home, "Home", "Home"),
     INCIDENTS("Incidents", Icons.Default.Build, "Incidents", "Incidents"),
-    DOCUMENTS("Documents", Icons.Default.MailOutline, "Documents", "Documents"),
     OPTIONS("Options", Icons.Default.Settings, "Options", "Options")
 }
