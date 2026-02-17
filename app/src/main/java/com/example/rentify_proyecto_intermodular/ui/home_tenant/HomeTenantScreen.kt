@@ -91,7 +91,9 @@ fun HomeTenantScreen(
             )
             Text(
                 text = stringResource(R.string.home_tenant_slogan, actualUser.firstName),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .padding(bottom = 40.dp)
             )
 
             CommonCard (
