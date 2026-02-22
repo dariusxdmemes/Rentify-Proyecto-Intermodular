@@ -189,10 +189,94 @@ fun HomeOwnerScreen(
                 }
             }
         }
+
+        var showDialog by remember { mutableStateOf(false) }
+
+        var tenantDni by remember { mutableStateOf("") }
+        var propertyPrice by remember { mutableStateOf("") }
+        var propertyServices by remember { mutableStateOf("") }
+        var propertyExcludedServices by remember { mutableStateOf("") }
+        var propertyAddress by remember { mutableStateOf("") }
+        var propertyCity by remember { mutableStateOf("") }
+        var propertyCountry by remember { mutableStateOf("") }
+
         CommonButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.home_owner_create_property),
-            onClick = {/* todo CREATE PROPERTY DIALOG */ }
+            onClick = { showDialog = !showDialog }
         )
+
+        if (showDialog) {
+            CommonDialog(
+                onDismissRequest = { showDialog = !showDialog },
+                onConfirmation = { /*  todo CREATE A PROPERTY WITH THE PROVIDED DATA */ },
+                dialogTitle = stringResource(R.string.home_owner_create_property),
+                dialogText = "texto",
+                icon = null
+            ) {
+                Surface {
+                    Column(
+                        modifier = Modifier.padding(top = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = tenantDni,
+                            onValueChange = { tenantDni = it },
+                            label = { Text("Tenant DNI") },
+                            placeholder = { Text("Tenant identification number") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = propertyPrice,
+                            onValueChange = { propertyPrice = it },
+                            label = { Text("Property price") },
+                            placeholder = { Text("Whats the property's price?") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = propertyServices,
+                            onValueChange = { propertyServices = it },
+                            label = { Text("Included services") },
+                            placeholder = { Text("Which services are included?") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = propertyExcludedServices,
+                            onValueChange = { propertyExcludedServices = it },
+                            label = { Text("Excluded services") },
+                            placeholder = { Text("Which services are not included?") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = propertyAddress,
+                            onValueChange = { propertyAddress = it },
+                            label = { Text("Property address") },
+                            placeholder = { Text("Ex. Calle Flores, 33") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = propertyCity,
+                            onValueChange = { propertyCity = it },
+                            label = { Text("Property city") },
+                            placeholder = { Text("Ex. Valencia") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = propertyCountry,
+                            onValueChange = { propertyCountry = it },
+                            label = { Text("Property country") },
+                            placeholder = { Text("Ex. Spain") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
+        }
     }
 }
