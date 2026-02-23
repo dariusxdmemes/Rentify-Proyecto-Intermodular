@@ -42,6 +42,7 @@ import androidx.navigation.NavHostController
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.login
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.data.model.UserType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -245,7 +246,7 @@ fun LoginScreen(
                             coroutineScope.launch {
                                 try {
                                     if (selectedOption.text == R.string.radio_owner_login) {
-                                        val user = login(email, password, "owner")
+                                        val user = login(email, password, UserType.OWNER)
                                         if (user == null) {
                                             Toast.makeText(
                                                 applicationContext,
@@ -257,7 +258,7 @@ fun LoginScreen(
                                             navController.navigate("Main")
                                         }
                                     } else if (selectedOption.text == R.string.radio_tenant_login) {
-                                        val user = login(email, password, "tenant")
+                                        val user = login(email, password, UserType.TENANT)
                                         if (user == null) {
                                             Toast.makeText(
                                                 applicationContext,

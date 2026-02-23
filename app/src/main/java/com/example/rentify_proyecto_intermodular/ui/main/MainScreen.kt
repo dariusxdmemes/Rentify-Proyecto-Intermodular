@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.data.model.UserType
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.home_tenant.HomeTenantScreen
 import com.example.rentify_proyecto_intermodular.ui.settings.OwnerSettingsScreen
@@ -72,51 +73,46 @@ fun MainScreen(
             startDestination = startDestination.route
         ){
             composable(Destinations.HOME.route) {
-                if (actualUser.ownedProperty != null){ // If ownedProperty is not null, we assume it is an owner
+                if (actualUser.type == UserType.OWNER){
                     HomeOwnerScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser
                     )
                 }
-                else if (actualUser.leasedProperty != null){ // If leasedProperty is not null, we assume it is an tenant
+                else if (actualUser.type == UserType.TENANT){
                     HomeTenantScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
                         leasedProperty = actualUser.leasedProperty
                     )
                 }
-                else {
-                    Text(text = stringResource(R.string.aux))
-                }
             }
 
             composable (Destinations.OPTIONS.route) {
-                if (actualUser.ownedProperty != null) {
+                if (actualUser.type == UserType.OWNER) {
                     OwnerSettingsScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
                         onUserLogout = onUserLogout,
                         onUserUpdate = onUserUpdate
                     )
-                } else if (actualUser.leasedProperty != null) {
+                } else if (actualUser.type == UserType.TENANT) {
                     TenantSettingsScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser,
                         onUserLogout = onUserLogout,
                         onUserUpdate = onUserUpdate
                     )
-                } else {
-                    Text(text = stringResource(R.string.aux))
                 }
             }
 
             composable(Destinations.INCIDENTS.route) {
-                if (actualUser.ownedProperty != null) {
+                if (actualUser.type == UserType.OWNER) {
                     IncidentsOwnerScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser
                     )
-                } else if (actualUser.leasedProperty != null) {
+                } else if (actualUser.type == UserType.TENANT) {
                     IncidentsTenantScreen(
                         modifier = Modifier.padding(contentPadding),
                         actualUser = actualUser
