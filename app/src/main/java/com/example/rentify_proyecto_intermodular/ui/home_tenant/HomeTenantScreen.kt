@@ -1,16 +1,22 @@
 package com.example.rentify_proyecto_intermodular.ui.home_tenant
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.getOwnerUser
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
@@ -32,6 +40,7 @@ import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTenantScreen(
     modifier: Modifier = Modifier,
@@ -41,6 +50,13 @@ fun HomeTenantScreen(
     var services by remember { mutableStateOf<Service?>(null) }
     var owner by remember { mutableStateOf<User?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var fotosPropiedades by remember { mutableStateOf(listOf<String>()) }
+    var fotosPropiedadesTest = listOf<String>(
+        "https://i.pinimg.com/736x/b2/01/72/b20172b4535a922b32c5effdc19c1173.jpg",
+        "https://i.pinimg.com/736x/cf/f7/45/cff7451f24118f6efa98620c60700530.jpg",
+        "https://i.pinimg.com/736x/b0/36/d8/b036d8f10516eb1845de912855213a34.jpg",
+        "https://i.pinimg.com/736x/b8/c5/64/b8c56428d3ab4bb90f2086b3b0fa5ecf.jpg"
+    )
 
     if (leasedProperty != null) {
         LaunchedEffect(leasedProperty) {
@@ -131,6 +147,29 @@ fun HomeTenantScreen(
 
                     }
                 }
+
+                HorizontalUncontainedCarousel(
+                    state = rememberCarouselState { fotosPropiedadesTest.count() },
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .padding(top = 45.dp, bottom = 10.dp),
+                    itemSpacing = 10.dp,
+                    itemWidth = 160.dp,
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) { i ->
+                    val items = fotosPropiedadesTest[i]
+
+                    AsyncImage(
+                        model = items,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Text(
+                    text = "${actualUser.leasedProperty?.address}",
+                    modifier = Modifier.basicMarquee(),
+                    fontSize = 15.sp
+                )
             }
             else {
                 Text(stringResource(R.string.home_tenant_no_property))
