@@ -69,7 +69,7 @@ suspend fun getIncidentsByProperty(propertyId: Int): List<Incident> {
 
 /**
  * Registers a property in the database
- * @param property The `Property` object that needs to be registered. ID field is ignored.
+ * @param incident The `Incident` object that needs to be registered. ID field is ignored.
  * @throws IOException on network error
  */
 suspend fun createIncident (incident: Incident) {

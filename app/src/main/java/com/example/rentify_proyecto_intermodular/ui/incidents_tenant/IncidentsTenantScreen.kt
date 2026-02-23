@@ -1,5 +1,6 @@
 package com.example.rentify_proyecto_intermodular.ui.incidents_tenant
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,40 +26,36 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.createIncident
 import com.example.rentify_proyecto_intermodular.data.api.getIncidentsByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.User
-import com.example.rentify_proyecto_intermodular.data.model.UserType
 import com.example.rentify_proyecto_intermodular.ui.common.CommonButton
 import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import com.example.rentify_proyecto_intermodular.ui.common.CommonDialog
+import kotlinx.coroutines.launch
 
 @Composable
 fun IncidentsTenantScreen(
     modifier: Modifier = Modifier,
     actualUser: User
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     var incidents by remember { mutableStateOf<List<Incident>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var onError by remember { mutableStateOf(false) }
 
-    LaunchedEffect(actualUser.id) {
-        try {
-            isLoading = true; onError = false
-            incidents = if (actualUser.leasedProperty == null) emptyList()
-                else getIncidentsByProperty(actualUser.leasedProperty.id)
-        } catch (e: Exception) {
-            onError = true
-        } finally {
-            isLoading = false
-        }
-    }
+    var showCreateIncidentDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -78,33 +76,287 @@ fun IncidentsTenantScreen(
                 .padding(bottom = 10.dp)
         )
 
-        when{
-            isLoading -> {
-                /* todo IMPLEMENT A CIRCULAR LOADING ANIMATION "CIRCULAR_PROGRESS_INDICATOR" */
-                Text(
-                    text = stringResource(R.string.incidents_owner_loading_label)
-                )
+        if (actualUser.leasedProperty == null){
+            Text(stringResource(R.string.home_tenant_no_property))
+        }
+        else {
+            LaunchedEffect(actualUser.id) {
+                try {
+                    isLoading = true; onError = false
+                    incidents = getIncidentsByProperty(actualUser.leasedProperty.id)
+                } catch (e: Exception) {
+                    onError = true
+                } finally {
+                    isLoading = false
+                }
             }
-            onError -> {
-                Text(
-                    text = stringResource(R.string.incidents_owner_on_error_req)
-                )
-                /* todo IMPLEMENT A "REFRESH DATA" BUTTON SO USER DOESNT NEED TO RE-OPEN THE APP */
+
+            when {
+                isLoading -> {
+                    /* todo IMPLEMENT A CIRCULAR LOADING ANIMATION "CIRCULAR_PROGRESS_INDICATOR" */
+                    Text(
+                        text = stringResource(R.string.incidents_owner_loading_label)
+                    )
+                }
+
+                onError -> {
+                    Text(
+                        text = stringResource(R.string.incidents_owner_on_error_req)
+                    )
+                    /* todo IMPLEMENT A "REFRESH DATA" BUTTON SO USER DOESNT NEED TO RE-OPEN THE APP */
+                }
+
+                incidents.isEmpty() -> {
+                    CommonCard(
+                        title = stringResource(R.string.incidents_create_button),
+                        expanded = false,
+                        icon = null
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                        ) {
+                            var issuePlaceholder by remember { mutableStateOf("") }
+                            var descriptionPlaceholder by remember { mutableStateOf("") }
+
+                            OutlinedTextField(
+                                value = issuePlaceholder,
+                                onValueChange = {
+                                    issuePlaceholder = it
+                                },
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.incidents_owner_issue_label)
+                                    )
+                                },
+                                singleLine = true,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.onSecondary,
+
+                                    focusedLabelColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
+
+                                    focusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+
+                                    focusedTextColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.scrim,
+
+                                    cursorColor = MaterialTheme.colorScheme.scrim
+                                )
+                            )
+                            OutlinedTextField(
+                                value = descriptionPlaceholder,
+                                onValueChange = {
+                                    descriptionPlaceholder = it
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 5.dp),
+                                minLines = 1,
+                                maxLines = 2,
+                                placeholder = {
+                                    Text(
+                                        text = stringResource(R.string.incidents_owner_descripition_label)
+                                    )
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.onSecondary,
+
+                                    focusedLabelColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedLabelColor = MaterialTheme.colorScheme.scrim,
+
+                                    focusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.scrim,
+
+                                    focusedTextColor = MaterialTheme.colorScheme.scrim,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.scrim,
+
+                                    cursorColor = MaterialTheme.colorScheme.scrim
+                                )
+                            )
+                            ElevatedButton(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                onClick = { }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.incidents_create_button)
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier.weight(1f))
+                }
+
+                else -> {
+                    LazyColumn(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(5.dp)
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        /* Si la cantidad de incidencias es 0, mostrar "CREAR INCIDENCIA"
+                * Si hay una incidencia (o mas) activa, mostrar informacion acerca
+                * de ella, ademas de poder editarla (editar asunto, editar descripcion) */
+
+                        items(incidents) { incident ->
+                            CommonCard(
+                                title = incident.issue,
+                                expanded = false,
+                                icon = null
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp),
+                                ) {
+
+                                    var showDialog by remember { mutableStateOf(false) }
+
+                                    Text(
+                                        modifier = Modifier.padding(horizontal = 12.dp),
+                                        text = incident.description
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceEvenly
+                                    ) {
+                                        Button(
+                                            modifier = Modifier
+                                                .padding(top = 5.dp, bottom = 5.dp),
+                                            onClick = {
+                                                showDialog = !showDialog
+                                            }
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.incidents_edit_incident_button_title)
+                                            )
+                                        }
+
+                                        var newIssue by remember { mutableStateOf("") }
+                                        var newDescription by remember { mutableStateOf("") }
+
+                                        if (showDialog) {
+                                            CommonDialog(
+                                                onDismissRequest = { showDialog = !showDialog },
+                                                onConfirmation = { /* todo CONFIRMAR UPDATE INCIDENT.ISSUE + INCIDENT.DESCRIP. */ },
+                                                dialogTitle = stringResource(R.string.incidents_edit_incident_button_title),
+                                                dialogText = "texto",
+                                                icon = null
+                                            ) {
+                                                Surface {
+                                                    Column(
+                                                        modifier = Modifier.padding(top = 16.dp),
+                                                        verticalArrangement = Arrangement.spacedBy(
+                                                            10.dp
+                                                        )
+                                                    ) {
+                                                        OutlinedTextField(
+                                                            value = newIssue,
+                                                            onValueChange = { newIssue = it },
+                                                            label = { Text("Issue") },
+                                                            placeholder = { Text("new issue") },
+                                                            modifier = Modifier.fillMaxWidth()
+                                                        )
+
+                                                        OutlinedTextField(
+                                                            value = newDescription,
+                                                            onValueChange = { newDescription = it },
+                                                            label = { Text("Description") },
+                                                            placeholder = { Text("new description") },
+                                                            modifier = Modifier.fillMaxWidth(),
+                                                            minLines = 3
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Button(
+                                            modifier = Modifier
+                                                .padding(top = 5.dp, bottom = 5.dp),
+                                            onClick = {
+                                                /* Este click permite resolver la incidencia PENDIENTE DE PENSAR */
+                                            },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                            )
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.SpaceEvenly
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Done,
+                                                    contentDescription = null
+                                                )
+                                                Text(
+                                                    text = stringResource(R.string.incidents_resolve_incident_button)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            incidents.isEmpty() -> {
-                CommonCard(
-                    title = stringResource(R.string.incidents_create_button),
-                    expanded = false,
-                    icon = null
+
+            CommonButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.incidents_new_incident_fab_title),
+                onClick = { showCreateIncidentDialog = true }
+            )
+
+            var issuePlaceholder by remember { mutableStateOf("") }
+            var descriptionPlaceholder by remember { mutableStateOf("") }
+            val createIncidentUnexpectedErrorMessage = stringResource(R.string.create_incidents_unexpected_error)
+            val createIncidentSuccessMessage = stringResource(R.string.create_incident_success)
+
+            if (showCreateIncidentDialog)
+                CommonDialog(
+                    onDismissRequest = { showCreateIncidentDialog = false },
+                    onConfirmation = {
+                        coroutineScope.launch {
+                            try {
+                                createIncident(
+                                    Incident(
+                                        id = 0,
+                                        issue = issuePlaceholder,
+                                        description = descriptionPlaceholder,
+                                        property_id = actualUser.leasedProperty.id,
+                                        tenant = actualUser,
+                                        owner_id = actualUser.leasedProperty.owner_fk
+                                    )
+                                )
+                                Toast.makeText(context, createIncidentSuccessMessage, Toast.LENGTH_LONG).show()
+                            }
+                            catch (e: Exception) {
+                                Toast.makeText(context, createIncidentUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                            }
+
+                            showCreateIncidentDialog = false
+                        }
+                    },
+                    dialogTitle = stringResource(R.string.incident_tenant_create_dialog_title),
+                    dialogText = "",
+                    icon = Icons.Default.Add
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp),
                     ) {
-                        var issuePlaceholder by remember { mutableStateOf("") }
-                        var descriptionPlaceholder by remember { mutableStateOf("") }
-
                         OutlinedTextField(
                             value = issuePlaceholder,
                             onValueChange = {
@@ -165,139 +417,8 @@ fun IncidentsTenantScreen(
                                 cursorColor = MaterialTheme.colorScheme.scrim
                             )
                         )
-                        ElevatedButton(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            onClick = {  }
-                        ) {
-                            Text(
-                                text = stringResource(R.string.incidents_create_button)
-                            )
-                        }
                     }
                 }
-                Spacer(modifier.weight(1f))
-            }
-            else -> {
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(5.dp)
-                        .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    /* Si la cantidad de incidencias es 0, mostrar "CREAR INCIDENCIA"
-                * Si hay una incidencia (o mas) activa, mostrar informacion acerca
-                * de ella, ademas de poder editarla (editar asunto, editar descripcion) */
-
-                    items (incidents) { incident ->
-                        CommonCard(
-                            title = incident.issue,
-                            expanded = false,
-                            icon = null
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp),
-                            ) {
-
-                                var showDialog by remember { mutableStateOf(false) }
-
-                                Text(
-                                    modifier = Modifier.padding(horizontal = 12.dp),
-                                    text = incident.description
-                                )
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    Button(
-                                        modifier = Modifier
-                                            .padding(top = 5.dp, bottom = 5.dp),
-                                        onClick = {
-                                            showDialog = !showDialog
-                                        }
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.incidents_edit_incident_button_title)
-                                        )
-                                    }
-
-                                    var newIssue by remember { mutableStateOf("") }
-                                    var newDescription by remember { mutableStateOf("") }
-
-                                    if (showDialog) {
-                                        CommonDialog(
-                                            onDismissRequest = { showDialog = !showDialog },
-                                            onConfirmation = { /* todo CONFIRMAR UPDATE INCIDENT.ISSUE + INCIDENT.DESCRIP. */ },
-                                            dialogTitle = stringResource(R.string.incidents_edit_incident_button_title),
-                                            dialogText = "texto",
-                                            icon = null
-                                        ) {
-                                            Surface {
-                                                Column(
-                                                    modifier = Modifier.padding(top = 16.dp),
-                                                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                                                ) {
-                                                    OutlinedTextField(
-                                                        value = newIssue,
-                                                        onValueChange = { newIssue = it },
-                                                        label = { Text("Issue") },
-                                                        placeholder = { Text("new issue") },
-                                                        modifier = Modifier.fillMaxWidth()
-                                                    )
-
-                                                    OutlinedTextField(
-                                                        value = newDescription,
-                                                        onValueChange = { newDescription = it },
-                                                        label = { Text("Description") },
-                                                        placeholder = { Text("new description") },
-                                                        modifier = Modifier.fillMaxWidth(),
-                                                        minLines = 3
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Button(
-                                        modifier = Modifier
-                                            .padding(top = 5.dp, bottom = 5.dp),
-                                        onClick = {
-                                            /* Este click permite resolver la incidencia PENDIENTE DE PENSAR */
-                                        },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.tertiary,
-                                        )
-                                    ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.SpaceEvenly
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Done,
-                                                contentDescription = null
-                                            )
-                                            Text(
-                                                text = stringResource(R.string.incidents_resolve_incident_button)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
-
-        CommonButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.incidents_new_incident_fab_title),
-            onClick = {/*TODO create an incident*/}
-        )
     }
 }
