@@ -9,6 +9,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import java.io.IOException
+import java.security.InvalidParameterException
 
 /**
  * Returns the incidents of a property
@@ -78,7 +79,7 @@ suspend fun createIncident (incident: Incident) {
     }
 
     try {
-        return withContext(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             val jsonBody = """
                 {
                     "asunto": "${incident.issue}",
@@ -103,5 +104,65 @@ suspend fun createIncident (incident: Incident) {
         }
     } catch (e: Exception) {
         throw IOException("Unexpected error.")
+    }
+}
+
+/**
+ * Gets an `Incident` object and sends a request to update the incident of the same ID with the specified information
+ * @param incident It's the Incident object with the target ID and the specified new information
+ * @throws IOException on network error
+ * @throws InvalidParameterException if `incident`'s tenant is null
+ */
+suspend fun updateIncident (incident: Incident) {
+    if (incident.tenant == null){
+        throw InvalidParameterException("Incident's tenant is null")
+    }
+
+    withContext(Dispatchers.IO) {
+        val jsonBody = """
+            {
+                "id": "${incident.id}",
+                "issue": "${incident.issue}",
+                "description": "${incident.description}"
+            }
+        """.trimIndent()
+        val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$BASE_URL/update/incident")
+            .put(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (response.code == 400) {
+                throw IOException("Missing field")
+            }
+            else if (!response.isSuccessful){
+                throw IOException("Unexpected Error")
+            }
+        }
+    }
+}
+
+/**
+ * Gets an ID and sends a request to delete the incident with matching ID
+ * @param incidentId The incident's ID
+ * @throws IOException on network error
+ */
+suspend fun deleteIncident (incidentId: Int) {
+    withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("$BASE_URL/incidents/$incidentId")
+            .delete()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (response.code == 404) {
+                throw IOException("Incident not found")
+            }
+            else if (!response.isSuccessful){
+                throw IOException("Unexpected Error")
+            }
+        }
     }
 }

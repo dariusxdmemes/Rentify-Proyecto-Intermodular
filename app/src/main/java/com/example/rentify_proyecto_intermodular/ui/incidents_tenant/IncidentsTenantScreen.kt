@@ -35,13 +35,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.createIncident
+import com.example.rentify_proyecto_intermodular.data.api.deleteIncident
 import com.example.rentify_proyecto_intermodular.data.api.getIncidentsByProperty
+import com.example.rentify_proyecto_intermodular.data.api.updateIncident
 import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.common.CommonButton
 import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import com.example.rentify_proyecto_intermodular.ui.common.CommonDialog
 import kotlinx.coroutines.launch
+import javax.sql.CommonDataSource
 
 @Composable
 fun IncidentsTenantScreen(
@@ -57,12 +60,16 @@ fun IncidentsTenantScreen(
 
     var showCreateIncidentDialog by remember { mutableStateOf(false) }
 
-    var dialogTitle = ""
     val createDialogTitle = stringResource(R.string.incident_tenant_create_dialog_title)
     val updateDialogTitle = stringResource(R.string.incident_tenant_update_dialog_title)
+    val deleteDialogTitle = stringResource(R.string.incident_tenant_delete_dialog_title)
 
     val createIncidentUnexpectedErrorMessage = stringResource(R.string.create_incidents_unexpected_error)
     val createIncidentSuccessMessage = stringResource(R.string.create_incident_success)
+    val updateIncidentUnexpectedErrorMessage = stringResource(R.string.update_incidents_unexpected_error)
+    val updateIncidentSuccessMessage = stringResource(R.string.update_incident_success)
+    val deleteIncidentSuccessMessage = stringResource(R.string.delete_incident_success)
+    val deleteIncidentUnexpectedErrorMessage = stringResource(R.string.delete_incidents_unexpected_error)
 
     var issuePlaceholder by remember { mutableStateOf("") }
     var descriptionPlaceholder by remember { mutableStateOf("") }
@@ -115,6 +122,10 @@ fun IncidentsTenantScreen(
                     )
                     /* todo IMPLEMENT A "REFRESH DATA" BUTTON SO USER DOESNT NEED TO RE-OPEN THE APP */
                 }
+
+                /* Si la cantidad de incidencias es 0, mostrar "CREAR INCIDENCIA"
+                * Si hay una incidencia (o mas) activa, mostrar informacion acerca
+                * de ella, ademas de poder editarla (editar asunto, editar descripcion) */
 
                 incidents.isEmpty() -> {
                     CommonCard(
@@ -231,10 +242,6 @@ fun IncidentsTenantScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        /* Si la cantidad de incidencias es 0, mostrar "CREAR INCIDENCIA"
-                * Si hay una incidencia (o mas) activa, mostrar informacion acerca
-                * de ella, ademas de poder editarla (editar asunto, editar descripcion) */
-
                         items(incidents) { incident ->
                             CommonCard(
                                 title = incident.issue,
@@ -246,24 +253,25 @@ fun IncidentsTenantScreen(
                                         .fillMaxWidth()
                                         .padding(top = 12.dp),
                                 ) {
-
-                                    var showDialog by remember { mutableStateOf(false) }
-
                                     Text(
                                         modifier = Modifier.padding(horizontal = 12.dp),
                                         text = incident.description
                                     )
+
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth(),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceEvenly
                                     ) {
+                                        var showUpdateDialog by remember { mutableStateOf(false) }
+
+                                        // Button to update an incident
                                         Button(
                                             modifier = Modifier
                                                 .padding(top = 5.dp, bottom = 5.dp),
                                             onClick = {
-                                                showDialog = !showDialog
+                                                showUpdateDialog = !showUpdateDialog
                                             }
                                         ) {
                                             Text(
@@ -271,14 +279,37 @@ fun IncidentsTenantScreen(
                                             )
                                         }
 
-                                        var newIssue by remember { mutableStateOf("") }
-                                        var newDescription by remember { mutableStateOf("") }
+                                        var newIssue by remember { mutableStateOf(incident.issue) }
+                                        var newDescription by remember { mutableStateOf(incident.description) }
 
-                                        if (showDialog) {
+                                        // Dialog to update an incident
+                                        if (showUpdateDialog) {
                                             CommonDialog(
-                                                onDismissRequest = { showDialog = !showDialog },
-                                                onConfirmation = { /* todo CONFIRMAR UPDATE INCIDENT.ISSUE + INCIDENT.DESCRIP. */ },
-                                                dialogTitle = stringResource(R.string.incidents_edit_incident_button_title),
+                                                onDismissRequest = { showUpdateDialog = !showUpdateDialog },
+                                                onConfirmation = {
+                                                    coroutineScope.launch {
+                                                        try{
+                                                            updateIncident(
+                                                                Incident(
+                                                                    id = incident.id,
+                                                                    issue = newIssue,
+                                                                    description = newDescription,
+                                                                    property_id = incident.property_id,
+                                                                    tenant = incident.tenant,
+                                                                    owner_id = incident.owner_id
+                                                                )
+                                                            )
+
+                                                            Toast.makeText(context, updateIncidentSuccessMessage, Toast.LENGTH_LONG).show()
+                                                        }
+                                                        catch (e: Exception){
+                                                            Toast.makeText(context, updateIncidentUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                                        }
+
+                                                        showUpdateDialog = false
+                                                    }
+                                                },
+                                                dialogTitle = updateDialogTitle,
                                                 dialogText = "texto",
                                                 icon = null
                                             ) {
@@ -309,11 +340,15 @@ fun IncidentsTenantScreen(
                                                 }
                                             }
                                         }
+
+                                        var showDeleteDialog by remember { mutableStateOf(false) }
+
+                                        // Button to resolve incidents
                                         Button(
                                             modifier = Modifier
                                                 .padding(top = 5.dp, bottom = 5.dp),
                                             onClick = {
-                                                /* Este click permite resolver la incidencia PENDIENTE DE PENSAR */
+                                                showDeleteDialog = true
                                             },
                                             colors = ButtonDefaults.buttonColors(
                                                 containerColor = MaterialTheme.colorScheme.tertiary,
@@ -332,6 +367,29 @@ fun IncidentsTenantScreen(
                                                 )
                                             }
                                         }
+
+                                        // Dialog to resolve incidents
+                                        if (showDeleteDialog)
+                                            CommonDialog(
+                                                onDismissRequest = { showDeleteDialog = false },
+                                                onConfirmation = {
+                                                    coroutineScope.launch {
+                                                        try {
+                                                            deleteIncident(incident.id)
+
+                                                            Toast.makeText(context, deleteIncidentSuccessMessage, Toast.LENGTH_LONG).show()
+                                                            showDeleteDialog = false
+                                                        }
+                                                        catch (e: Exception){
+                                                            Toast.makeText(context, deleteIncidentUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                                        }
+                                                    }
+                                                },
+                                                dialogTitle = deleteDialogTitle,
+                                                dialogText = stringResource(R.string.incidents_resolve_incident_button),
+                                                icon = null,
+                                                content = {}
+                                            )
                                     }
                                 }
                             }
@@ -344,7 +402,6 @@ fun IncidentsTenantScreen(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.incidents_new_incident_fab_title),
                 onClick = {
-                    dialogTitle = createDialogTitle
                     showCreateIncidentDialog = true
                 }
             )
@@ -374,7 +431,7 @@ fun IncidentsTenantScreen(
                             showCreateIncidentDialog = false
                         }
                     },
-                    dialogTitle = dialogTitle,
+                    dialogTitle = createDialogTitle,
                     dialogText = "",
                     icon = Icons.Default.Add
                 ) {
