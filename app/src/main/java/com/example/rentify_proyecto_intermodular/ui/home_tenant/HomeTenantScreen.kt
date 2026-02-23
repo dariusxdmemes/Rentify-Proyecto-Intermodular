@@ -51,12 +51,6 @@ fun HomeTenantScreen(
     var owner by remember { mutableStateOf<User?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var fotosPropiedades by remember { mutableStateOf(listOf<String>()) }
-    var fotosPropiedadesTest = listOf<String>(
-        "https://i.pinimg.com/736x/b2/01/72/b20172b4535a922b32c5effdc19c1173.jpg",
-        "https://i.pinimg.com/736x/cf/f7/45/cff7451f24118f6efa98620c60700530.jpg",
-        "https://i.pinimg.com/736x/b0/36/d8/b036d8f10516eb1845de912855213a34.jpg",
-        "https://i.pinimg.com/736x/b8/c5/64/b8c56428d3ab4bb90f2086b3b0fa5ecf.jpg"
-    )
 
     if (leasedProperty != null) {
         LaunchedEffect(leasedProperty) {
@@ -149,7 +143,7 @@ fun HomeTenantScreen(
                 }
 
                 HorizontalUncontainedCarousel(
-                    state = rememberCarouselState { fotosPropiedadesTest.count() },
+                    state = rememberCarouselState { fotosPropiedades.count() },
                     modifier = Modifier
                         .wrapContentHeight()
                         .padding(top = 45.dp, bottom = 10.dp),
@@ -157,7 +151,7 @@ fun HomeTenantScreen(
                     itemWidth = 160.dp,
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) { i ->
-                    val items = fotosPropiedadesTest[i]
+                    val items = fotosPropiedades[i]
 
                     AsyncImage(
                         model = items,
@@ -165,11 +159,18 @@ fun HomeTenantScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                Text(
-                    text = "${actualUser.leasedProperty?.address}",
-                    modifier = Modifier.basicMarquee(),
-                    fontSize = 15.sp
-                )
+                if (fotosPropiedades.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.home_tenant_no_pictures),
+                        fontSize = 15.sp
+                    )
+                } else {
+                    Text(
+                        text = "${actualUser.leasedProperty?.address}",
+                        modifier = Modifier.basicMarquee(),
+                        fontSize = 15.sp
+                    )
+                }
             }
             else {
                 Text(stringResource(R.string.home_tenant_no_property))
