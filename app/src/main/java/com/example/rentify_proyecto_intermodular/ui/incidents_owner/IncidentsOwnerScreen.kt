@@ -1,6 +1,5 @@
 package com.example.rentify_proyecto_intermodular.ui.incidents_owner
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
