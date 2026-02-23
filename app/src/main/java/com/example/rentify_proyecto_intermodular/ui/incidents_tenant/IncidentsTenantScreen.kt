@@ -97,7 +97,8 @@ fun IncidentsTenantScreen(
             Text(stringResource(R.string.home_tenant_no_property))
         }
         else {
-            LaunchedEffect(actualUser.id) {
+            var refreshTrigger by remember {mutableStateOf(0)}
+            LaunchedEffect(refreshTrigger) {
                 try {
                     isLoading = true; onError = false
                     incidents = getIncidentsByProperty(actualUser.leasedProperty.id)
@@ -221,6 +222,7 @@ fun IncidentsTenantScreen(
                                         }
 
                                         showCreateIncidentDialog = false
+                                        refreshTrigger++
                                     }
                                 }
                             ) {
@@ -307,6 +309,7 @@ fun IncidentsTenantScreen(
                                                         }
 
                                                         showUpdateDialog = false
+                                                        refreshTrigger++
                                                     }
                                                 },
                                                 dialogTitle = updateDialogTitle,
@@ -376,13 +379,14 @@ fun IncidentsTenantScreen(
                                                     coroutineScope.launch {
                                                         try {
                                                             deleteIncident(incident.id)
-
                                                             Toast.makeText(context, deleteIncidentSuccessMessage, Toast.LENGTH_LONG).show()
-                                                            showDeleteDialog = false
                                                         }
                                                         catch (e: Exception){
                                                             Toast.makeText(context, deleteIncidentUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
                                                         }
+
+                                                        showDeleteDialog = false
+                                                        refreshTrigger++
                                                     }
                                                 },
                                                 dialogTitle = deleteDialogTitle,
@@ -429,6 +433,7 @@ fun IncidentsTenantScreen(
                             }
 
                             showCreateIncidentDialog = false
+                            refreshTrigger++
                         }
                     },
                     dialogTitle = createDialogTitle,
