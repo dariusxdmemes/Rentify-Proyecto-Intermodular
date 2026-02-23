@@ -57,6 +57,16 @@ fun IncidentsTenantScreen(
 
     var showCreateIncidentDialog by remember { mutableStateOf(false) }
 
+    var dialogTitle = ""
+    val createDialogTitle = stringResource(R.string.incident_tenant_create_dialog_title)
+    val updateDialogTitle = stringResource(R.string.incident_tenant_update_dialog_title)
+
+    val createIncidentUnexpectedErrorMessage = stringResource(R.string.create_incidents_unexpected_error)
+    val createIncidentSuccessMessage = stringResource(R.string.create_incident_success)
+
+    var issuePlaceholder by remember { mutableStateOf("") }
+    var descriptionPlaceholder by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -117,9 +127,6 @@ fun IncidentsTenantScreen(
                                 .fillMaxWidth()
                                 .padding(10.dp),
                         ) {
-                            var issuePlaceholder by remember { mutableStateOf("") }
-                            var descriptionPlaceholder by remember { mutableStateOf("") }
-
                             OutlinedTextField(
                                 value = issuePlaceholder,
                                 onValueChange = {
@@ -183,7 +190,28 @@ fun IncidentsTenantScreen(
                             ElevatedButton(
                                 modifier = Modifier
                                     .fillMaxWidth(),
-                                onClick = { }
+                                onClick = {
+                                    coroutineScope.launch {
+                                        try {
+                                            createIncident(
+                                                Incident(
+                                                    id = 0,
+                                                    issue = issuePlaceholder,
+                                                    description = descriptionPlaceholder,
+                                                    property_id = actualUser.leasedProperty.id,
+                                                    tenant = actualUser,
+                                                    owner_id = actualUser.leasedProperty.owner_fk
+                                                )
+                                            )
+                                            Toast.makeText(context, createIncidentSuccessMessage, Toast.LENGTH_LONG).show()
+                                        }
+                                        catch (e: Exception) {
+                                            Toast.makeText(context, createIncidentUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                        }
+
+                                        showCreateIncidentDialog = false
+                                    }
+                                }
                             ) {
                                 Text(
                                     text = stringResource(R.string.incidents_create_button)
@@ -315,13 +343,11 @@ fun IncidentsTenantScreen(
             CommonButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.incidents_new_incident_fab_title),
-                onClick = { showCreateIncidentDialog = true }
+                onClick = {
+                    dialogTitle = createDialogTitle
+                    showCreateIncidentDialog = true
+                }
             )
-
-            var issuePlaceholder by remember { mutableStateOf("") }
-            var descriptionPlaceholder by remember { mutableStateOf("") }
-            val createIncidentUnexpectedErrorMessage = stringResource(R.string.create_incidents_unexpected_error)
-            val createIncidentSuccessMessage = stringResource(R.string.create_incident_success)
 
             if (showCreateIncidentDialog)
                 CommonDialog(
@@ -348,7 +374,7 @@ fun IncidentsTenantScreen(
                             showCreateIncidentDialog = false
                         }
                     },
-                    dialogTitle = stringResource(R.string.incident_tenant_create_dialog_title),
+                    dialogTitle = dialogTitle,
                     dialogText = "",
                     icon = Icons.Default.Add
                 ) {
