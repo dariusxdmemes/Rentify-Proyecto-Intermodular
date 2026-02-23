@@ -1,6 +1,7 @@
 package com.example.rentify_proyecto_intermodular.ui.home_tenant
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.getOwnerUser
@@ -150,7 +152,7 @@ fun HomeTenantScreen(
                     state = rememberCarouselState { fotosPropiedadesTest.count() },
                     modifier = Modifier
                         .wrapContentHeight()
-                        .padding(top = 10.dp, bottom = 10.dp),
+                        .padding(top = 45.dp, bottom = 10.dp),
                     itemSpacing = 10.dp,
                     itemWidth = 160.dp,
                     contentPadding = PaddingValues(horizontal = 16.dp)
@@ -159,10 +161,15 @@ fun HomeTenantScreen(
 
                     AsyncImage(
                         model = items,
-                        contentDescription = owner?.leasedProperty?.address,
+                        contentDescription = null,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+                Text(
+                    text = "${actualUser.leasedProperty?.address}",
+                    modifier = Modifier.basicMarquee(),
+                    fontSize = 15.sp
+                )
             }
             else {
                 Text(stringResource(R.string.home_tenant_no_property))
