@@ -4,6 +4,7 @@ import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.data.model.UserType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -38,7 +39,7 @@ val client: OkHttpClient = OkHttpClient()
  * @return Returns the User object on successful login, and `null` on incorrect credentials.
  * @throws IOException Throws `IOException` in case of network error
  */
-suspend fun login(email: String, password: String, type: String): User? {
+suspend fun login(email: String, password: String, type: UserType): User? {
     try {
         return withContext(Dispatchers.IO){
             var user: User? = null
@@ -47,7 +48,7 @@ suspend fun login(email: String, password: String, type: String): User? {
                 {
                     "email": "$email",
                     "password": "$password",
-                    "type": "$type"
+                    "type": "${type.stringRepresentation}"
                 }
             """.trimIndent()
             val requestBody = jsonBody.toRequestBody(jsonMediaType)
@@ -59,14 +60,16 @@ suspend fun login(email: String, password: String, type: String): User? {
 
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful){
-                    if (response.code == 401) {
-                        user = null // invalid credentials
-                    }
-                    else if (response.code == 400) {
-                        throw IOException("Missing field")
-                    }
-                    else {
-                        throw IOException("Unexpected error")
+                    when (response.code) {
+                        401 -> {
+                            user = null // invalid credentials
+                        }
+                        400 -> {
+                            throw IOException("Missing field")
+                        }
+                        else -> {
+                            throw IOException("Unexpected error")
+                        }
                     }
 
                 }
@@ -74,13 +77,14 @@ suspend fun login(email: String, password: String, type: String): User? {
                     val body = response.body?.string() ?: throw IOException("Empty body")
                     val jsonObject = JSONObject(body)
 
-                    if(type=="owner"){
+                    val ownedProperties: List<Property>? =
+                        if (jsonObject.has("ownedProperty") && !jsonObject.isNull("ownedProperty")) {
 
-                        val ownedProperties: List<Property>? =
-                            if (jsonObject.has("ownedProperty") && !jsonObject.isNull("ownedProperty")) {
                             val jsonArray = jsonObject.getJSONArray("ownedProperty")
+
                             List(jsonArray.length()) { i ->
                                 val propJson = jsonArray.getJSONObject(i)
+
                                 Property(
                                     id = propJson.getInt("id"),
                                     address = propJson.getString("address"),
@@ -90,24 +94,13 @@ suspend fun login(email: String, password: String, type: String): User? {
                                     alquiler = propJson.getInt("alquiler")
                                 )
                             }
+
                         } else null
 
-                        user = User(
-                            jsonObject.getInt("id"),
-                            jsonObject.getString("first_name"),
-                            jsonObject.getString("last_name"),
-                            jsonObject.getString("phone_number"),
-                            jsonObject.getString("email"),
-                            "",
-                            ownedProperties,
-                            null
-                        )
-                    }
-                    else if(type=="tenant"){
-
-                        val leasedProperty: Property? =
-                            if (jsonObject.has("leasedProperty") && !jsonObject.isNull("leasedProperty")) {
+                    val leasedProperty: Property? =
+                        if (jsonObject.has("leasedProperty") && !jsonObject.isNull("leasedProperty")) {
                             val propJson = jsonObject.getJSONObject("leasedProperty")
+
                             Property(
                                 id = propJson.getInt("id"),
                                 address = propJson.getString("address"),
@@ -118,28 +111,26 @@ suspend fun login(email: String, password: String, type: String): User? {
                             )
                         } else null
 
-                        user = User(
-                            jsonObject.getInt("id"),
-                            jsonObject.getString("first_name"),
-                            jsonObject.getString("last_name"),
-                            jsonObject.getString("phone_number"),
-                            jsonObject.getString("email"),
-                            "",
-                            null,
-                            leasedProperty
-                        )
-                    }
-                    if(user != null && user.ownedProperty == null && user.leasedProperty == null){
-                        //not owner or tenant
-                        user = null
-                    }
+                    user = User(
+                        id = jsonObject.getInt("id"),
+                        firstName = jsonObject.getString("first_name"),
+                        lastName = jsonObject.getString("last_name"),
+                        phoneNumber = jsonObject.getString("phone_number"),
+                        email = jsonObject.getString("email"),
+                        password = "",
+                        ownedProperty = ownedProperties,
+                        leasedProperty = leasedProperty,
+                        type = UserType.entries.find {
+                            it.stringRepresentation == jsonObject.getString("type")
+                        } ?: throw IOException("Unrecognized user type")
+                    )
                 }
             }
 
             user
         }
     } catch (e: Exception) {
-        throw IOException("Unexpected error")
+        throw e
     }
 }
 
@@ -160,7 +151,8 @@ suspend fun registerUser(user: User): Int {
                     "last_name": "${user.lastName}",
                     "email": "${user.email}",
                     "phone_number": "${user.phoneNumber}",
-                    "password": "${user.password}"
+                    "password": "${user.password}",
+                    "type": "${user.type.stringRepresentation}"
                 }
             """.trimIndent()
             val requestBody = jsonBody.toRequestBody(jsonMediaType)
@@ -171,16 +163,14 @@ suspend fun registerUser(user: User): Int {
                 .build()
 
             client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful){
+                code = if (!response.isSuccessful){
                     if (response.code == 401) {
-                        code = 1 // duplicated email
+                        1 // duplicated email
+                    } else {
+                        2 // generic error
                     }
-                    else {
-                        code = 2 // generic error
-                    }
-                }
-                else {
-                    code = 0 // success
+                } else {
+                    0 // success
                 }
             }
 
@@ -223,7 +213,8 @@ suspend fun getTenantsByProperty(propertyId: Int): List<User> {
                         email = u.getString("email"),
                         password = "",
                         ownedProperty = null,
-                        leasedProperty = null
+                        leasedProperty = null,
+                        type = UserType.TENANT
                     )
                 }
             }
@@ -267,7 +258,10 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
                         email = jsonObject.getString("email"),
                         password = "",
                         ownedProperty = null,
-                        leasedProperty = null
+                        leasedProperty = null,
+                        type = UserType.entries.find {
+                            it.stringRepresentation == jsonObject.getString("type")
+                        } ?: throw IOException("Unrecognized user type")
                     )
 
                 }
@@ -275,7 +269,7 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
 
         }
     } catch (e: Exception) {
-        throw IOException("Unexpected error")
+        throw e
     }
 }
 
@@ -284,7 +278,7 @@ suspend fun getOwnerUser(ownerFK: Int): User? {
  * @param (user, actualpassword, newpassword).
  * @return return de actual user with his information updated.
  */
-suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): User? {
+suspend fun updateUser(user: User, actualpassword: String, newpassword: String ): User? {
     try {
         return withContext(Dispatchers.IO){
 
@@ -325,7 +319,8 @@ suspend fun updateUser(user: User,actualpassword: String,newpassword: String ): 
                         email = jsonObject.getString("email"),
                         password = "",
                         ownedProperty = user.ownedProperty,
-                        leasedProperty = user.leasedProperty
+                        leasedProperty = user.leasedProperty,
+                        type = user.type
                     )
 
                 }
@@ -451,7 +446,8 @@ suspend fun getIncidentsByProperty(propertyId: Int): List<Incident> {
                                 email = propJson.getString("email"),
                                 password = "",
                                 ownedProperty = null,
-                                leasedProperty = null
+                                leasedProperty = null,
+                                type = UserType.TENANT
                             )
                         } else null
                     Incident(

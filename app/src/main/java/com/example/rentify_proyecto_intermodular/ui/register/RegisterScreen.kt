@@ -2,7 +2,9 @@ package com.example.rentify_proyecto_intermodular.ui.register
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,11 +21,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,8 +38,11 @@ import androidx.navigation.NavHostController
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.registerUser
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.data.model.UserType
+import com.example.rentify_proyecto_intermodular.ui.login.LoginOption
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.security.InvalidParameterException
 
 @Composable
 fun RegisterScreen(
@@ -107,6 +115,52 @@ fun RegisterScreen(
                     modifier = Modifier
                         .padding(bottom = 10.dp)
                 )
+
+                val radioButtons = listOf(
+                    LoginOption(
+                        R.string.radio_owner_login
+                    ),
+                    LoginOption(
+                        R.string.radio_tenant_login
+                    )
+                )
+                var selectedOption by remember { mutableStateOf(radioButtons[0]) }
+
+                Card(
+                    border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.onSurfaceVariant),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimary,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    modifier = Modifier
+                        .padding(
+                            top = 40.dp,
+                            bottom = 20.dp
+                        )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 20.dp, top = 5.dp, bottom = 5.dp)
+                    ) {
+                        radioButtons.forEach { option ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .clickable { selectedOption = option }
+                            ) {
+                                RadioButton(
+                                    selected = (option == selectedOption),
+                                    onClick = { selectedOption = option }
+                                )
+                                Text(
+                                    text = stringResource(option.text),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
+                    }
+                }
 
                 Card(
                     modifier = Modifier
@@ -203,12 +257,17 @@ fun RegisterScreen(
                                                 try {
                                                     val statusCode = registerUser(
                                                         user = User(
-                                                            0,
-                                                            firstName,
-                                                            lastName,
-                                                            phoneNumber,
-                                                            email,
-                                                            password
+                                                            id = 0,
+                                                            firstName = firstName,
+                                                            lastName = lastName,
+                                                            phoneNumber = phoneNumber,
+                                                            email = email,
+                                                            password = password,
+                                                            type = when (selectedOption.text) {
+                                                                R.string.radio_owner_login -> UserType.OWNER
+                                                                R.string.radio_tenant_login -> UserType.TENANT
+                                                                else -> throw InvalidParameterException("selectedOption's text is invalid")
+                                                            }
                                                         )
                                                     )
 

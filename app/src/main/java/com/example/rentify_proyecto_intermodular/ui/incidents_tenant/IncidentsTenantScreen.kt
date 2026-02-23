@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.data.model.UserType
 import com.example.rentify_proyecto_intermodular.ui.common.CommonButton
 import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import com.example.rentify_proyecto_intermodular.ui.common.CommonDialog
@@ -52,7 +53,8 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                     "Fiestas",
                     "666666666",
                     "fiestas.paco@gmx.com",
-                    "1234"
+                    "1234",
+                    type = UserType.TENANT
                 ),
                 1
             ),
@@ -67,7 +69,8 @@ fun IncidentsTenantScreen(modifier: Modifier = Modifier, actualUser: User) {
                     "Porras",
                     "677777777",
                     "pablo.porras@gmx.com",
-                    "1234"
+                    "1234",
+                    type = UserType.TENANT
                 ),
                 1
             )

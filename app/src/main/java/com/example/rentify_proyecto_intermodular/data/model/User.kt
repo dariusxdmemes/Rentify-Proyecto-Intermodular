@@ -12,4 +12,5 @@ data class User (
     val password: String,
     val ownedProperty: List<Property>? = null,
     val leasedProperty: Property? = null,
+    val type: UserType
 )

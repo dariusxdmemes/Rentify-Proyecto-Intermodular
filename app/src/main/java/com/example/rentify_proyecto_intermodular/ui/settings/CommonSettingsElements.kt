@@ -134,7 +134,8 @@ fun UpdateAccountInfoCard(
                                     email,
                                     oldPassword,
                                     actualUser.ownedProperty,
-                                    actualUser.leasedProperty
+                                    actualUser.leasedProperty,
+                                    type = actualUser.type
                                 ),
                                 actualpassword = oldPassword,
                                 newpassword = newPassword

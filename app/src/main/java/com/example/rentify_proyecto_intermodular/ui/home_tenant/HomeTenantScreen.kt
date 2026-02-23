@@ -43,28 +43,30 @@ import kotlinx.coroutines.coroutineScope
 fun HomeTenantScreen(
     modifier: Modifier = Modifier,
     actualUser: User,
-    leasedProperty: Property
+    leasedProperty: Property?
 ) {
     var services by remember { mutableStateOf<Service?>(null) }
     var owner by remember { mutableStateOf<User?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
-    LaunchedEffect(leasedProperty) {
-        isLoading = true
-        try {
-            coroutineScope {
-                val servicesDeferred = async {
-                    getServicesByProperty(leasedProperty.id)
-                }
-                val ownerDeferred = async {
-                    getOwnerUser(leasedProperty.owner_fk)
-                }
+    if (leasedProperty != null) {
+        LaunchedEffect(leasedProperty) {
+            isLoading = true
+            try {
+                coroutineScope {
+                    val servicesDeferred = async {
+                        getServicesByProperty(leasedProperty.id)
+                    }
+                    val ownerDeferred = async {
+                        getOwnerUser(leasedProperty.owner_fk)
+                    }
 
-                services = servicesDeferred.await()
-                owner = ownerDeferred.await()
+                    services = servicesDeferred.await()
+                    owner = ownerDeferred.await()
+                }
+            } finally {
+                isLoading = false
             }
-        } finally {
-            isLoading = false
         }
     }
 
@@ -94,39 +96,49 @@ fun HomeTenantScreen(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            CommonCard (
-                title = leasedProperty.address,
-                icon = Icons.Default.Home,
-                expanded = false,
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+            if (leasedProperty != null) {
+                CommonCard(
+                    title = leasedProperty.address,
+                    icon = Icons.Default.Home,
+                    expanded = false,
                 ) {
-                    if (isLoading) {
-                        Text(text = stringResource(R.string.wait))
-                    } else {
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
-                                    "${owner?.firstName?: stringResource(R.string.home_tenant_unavalible_owner)} " +
-                                    "${owner?.lastName?: stringResource(R.string.home_tenant_unavalible_owner)}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${stringResource(R.string.euro)}",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${stringResource(R.string.home_tenant_services)} ${services?.included}" ?: stringResource(R.string.home_tenant_unavalible_services),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        if (isLoading) {
+                            Text(text = stringResource(R.string.wait))
+                        } else {
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
+                                        "${owner?.firstName ?: stringResource(R.string.home_tenant_unavalible_owner)} " +
+                                        "${owner?.lastName ?: stringResource(R.string.home_tenant_unavalible_owner)}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_price)} ${leasedProperty.alquiler} ${
+                                    stringResource(
+                                        R.string.euro
+                                    )
+                                }",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included}"
+                                    ?: stringResource(R.string.home_tenant_unavalible_services),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
 
+                    }
                 }
+            }
+            else {
+                Text(stringResource(R.string.home_tenant_no_property))
             }
         }
     }
