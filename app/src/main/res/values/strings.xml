@@ -45,6 +45,7 @@
     <string name="home_owner_delete_property">Delete</string>
     <string name="home_owner_create_property">Register a New Property</string>
     <string name="home_tenant_no_property">You still do not have a leased property. Contact the owner.</string>
+    <string name="home_owner_add_tenant">Add a tenant</string>
 
     <!-- Settings -->
     <string name="settings_slogan">Let\'s customize</string>
