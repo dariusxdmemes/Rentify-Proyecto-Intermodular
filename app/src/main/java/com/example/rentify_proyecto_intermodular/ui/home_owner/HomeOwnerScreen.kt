@@ -97,7 +97,8 @@ fun HomeOwnerScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
 
-                        var showDialog by remember { mutableStateOf(false) }
+                        var showUpdateDialog by remember { mutableStateOf(false) }
+                        var showAddTenantDialog by remember { mutableStateOf(false) }
 
                         if (isLoading) {
                             Text(text = "Cargando datos...")
@@ -124,7 +125,17 @@ fun HomeOwnerScreen(
                             CommonButton(
                                 text = stringResource(R.string.home_owner_update_property),
                                 onClick = {
-                                    showDialog = !showDialog
+                                    showUpdateDialog = !showUpdateDialog
+                                }
+                            )
+                            CommonButton(
+                                text = stringResource(R.string.home_owner_delete_property),
+                                onClick = {/* TODO DELETE PROPERTY*/ }
+                            )
+                            CommonButton(
+                             text = stringResource(R.string.home_owner_add_tenant),
+                                onClick = {
+                                    showAddTenantDialog = !showAddTenantDialog
                                 }
                             )
                         }
@@ -138,9 +149,9 @@ fun HomeOwnerScreen(
                             mutableStateOf(services?.excluded ?: "tampoco hay")
                         }
 
-                        if (showDialog) {
+                        if (showUpdateDialog) {
                             CommonDialog(
-                                onDismissRequest = { showDialog = !showDialog },
+                                onDismissRequest = { showUpdateDialog = !showUpdateDialog },
                                 onConfirmation = { /*  todo UPDATE THE PROPERTY WITH NEW CHANGES */ },
                                 dialogTitle = stringResource(R.string.home_owner_update_property),
                                 dialogText = "texto",
@@ -181,10 +192,32 @@ fun HomeOwnerScreen(
                             }
                         }
 
-                        CommonButton(
-                            text = stringResource(R.string.home_owner_delete_property),
-                            onClick = {/* TODO DELETE PROPERTY*/ }
-                        )
+                        var newTenantEmail by remember { mutableStateOf("") }
+
+                        if (showAddTenantDialog) {
+                            CommonDialog(
+                                onDismissRequest = { showAddTenantDialog = !showAddTenantDialog },
+                                onConfirmation = { /*  todo ADD A NEW TENANT TO THE PROPERTY BY EMAIL */ },
+                                dialogTitle = stringResource(R.string.home_owner_add_tenant),
+                                dialogText = "texto",
+                                icon = null
+                            ) {
+                                Surface {
+                                    Column(
+                                        modifier = Modifier.padding(top = 16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        OutlinedTextField(
+                                            value = newTenantEmail,
+                                            onValueChange = { newTenantEmail = it },
+                                            label = { Text("Tenant email") },
+                                            placeholder = { Text("email@example.com") },
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -192,7 +225,6 @@ fun HomeOwnerScreen(
 
         var showDialog by remember { mutableStateOf(false) }
 
-        var tenantDni by remember { mutableStateOf("") }
         var propertyPrice by remember { mutableStateOf("") }
         var propertyServices by remember { mutableStateOf("") }
         var propertyExcludedServices by remember { mutableStateOf("") }
