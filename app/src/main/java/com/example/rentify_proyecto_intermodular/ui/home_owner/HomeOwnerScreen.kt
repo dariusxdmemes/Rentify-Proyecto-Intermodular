@@ -219,13 +219,6 @@ fun HomeOwnerScreen(
                         modifier = Modifier.padding(top = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        OutlinedTextField(
-                            value = tenantDni,
-                            onValueChange = { tenantDni = it },
-                            label = { Text("Tenant DNI") },
-                            placeholder = { Text("Tenant identification number") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
 
                         OutlinedTextField(
                             value = propertyPrice,
