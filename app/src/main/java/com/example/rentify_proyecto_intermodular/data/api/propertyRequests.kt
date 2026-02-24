@@ -21,7 +21,7 @@ suspend fun registerProperty (property: Property) {
                 {
                     "address": "${property.address}",
                     "owner_fk": "${property.owner_fk}",
-                    "ciudad": "${property.address}",
+                    "ciudad": "${property.ciudad}",
                     "pais": "${property.pais}",
                     "alquiler": "${property.alquiler}"
                 }

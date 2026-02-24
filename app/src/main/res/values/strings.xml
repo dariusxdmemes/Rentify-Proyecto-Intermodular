@@ -47,6 +47,13 @@
     <string name="home_tenant_no_property">You still do not have a leased property. Contact the owner.</string>
     <string name="home_owner_add_tenant">Add a tenant</string>
     <string name="home_tenant_no_pictures">This property has no pictures.</string>
+    <string name="home_owner_invalid_price_format">The property price must be a positive whole number</string>
+    <string name="home_owner_create_property_unexpected_error">There was an unexpected error while creating the property.</string>
+    <string name="home_owner_create_property_success">Property created successfully</string>
+    <string name="home_owner_update_property_unexpected_error">There was an unexpected error while updating the property.</string>
+    <string name="home_owner_update_property_success">Property updated successfully</string>
+    <string name="home_owner_delete_property_unexpected_error">There was an unexpected error while deleting the property.</string>
+    <string name="home_owner_delete_property_success">Property deleted successfully</string>
 
     <!-- Settings -->
     <string name="settings_slogan">Let\'s customize</string>

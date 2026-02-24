@@ -1,5 +1,6 @@
 package com.example.rentify_proyecto_intermodular.ui.home_owner
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,14 +20,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
+import com.example.rentify_proyecto_intermodular.data.api.registerProperty
+import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.ui.common.CommonButton
@@ -34,12 +39,25 @@ import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import com.example.rentify_proyecto_intermodular.ui.common.CommonDialog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeOwnerScreen(
     modifier: Modifier,
-    actualUser: User
+    actualUser: User,
+    onRefreshUserProperties: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val invalidPriceFormatMessage = stringResource(R.string.home_owner_invalid_price_format)
+    val createPropertySuccessMessage = stringResource(R.string.home_owner_create_property_success)
+    val createPropertyUnexpectedErrorMessage = stringResource(R.string.home_owner_create_property_unexpected_error)
+    val updatePropertySuccessMessage = stringResource(R.string.home_owner_update_property_success)
+    val updatePropertyUnexpectedErrorMessage = stringResource(R.string.home_owner_update_property_unexpected_error)
+    val deletePropertySuccessMessage = stringResource(R.string.home_owner_delete_property_success)
+    val deletePropertyUnexpectedErrorMessage = stringResource(R.string.home_owner_delete_property_unexpected_error)
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -143,10 +161,10 @@ fun HomeOwnerScreen(
                         var actualPrice by remember(property.alquiler) { mutableStateOf(property.alquiler.toString()) }
 
                         var actualServices by remember(services) {
-                            mutableStateOf(services?.included ?: "no hay")
+                            mutableStateOf(services?.included ?: "Nothing to see...")
                         }
                         var actualExcludedServices by remember(services) {
-                            mutableStateOf(services?.excluded ?: "tampoco hay")
+                            mutableStateOf(services?.excluded ?: "Nothing to see...")
                         }
 
                         if (showUpdateDialog) {
@@ -232,16 +250,48 @@ fun HomeOwnerScreen(
         var propertyCity by remember { mutableStateOf("") }
         var propertyCountry by remember { mutableStateOf("") }
 
+        // Button to create a property
         CommonButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.home_owner_create_property),
             onClick = { showDialog = !showDialog }
         )
 
+        // Dialog to create a property
         if (showDialog) {
             CommonDialog(
                 onDismissRequest = { showDialog = !showDialog },
-                onConfirmation = { /*  todo CREATE A PROPERTY WITH THE PROVIDED DATA */ },
+                onConfirmation = {
+                    coroutineScope.launch {
+                        val propertyPriceInt = propertyPrice.toIntOrNull()
+
+                        if (propertyPriceInt == null || propertyPriceInt <= 0){
+                            Toast.makeText(context, invalidPriceFormatMessage, Toast.LENGTH_LONG).show()
+                            return@launch
+                        }
+
+                        try {
+                            registerProperty(
+                                Property(
+                                    id = 0,
+                                    address = propertyAddress,
+                                    owner_fk = actualUser.id,
+                                    ciudad = propertyCity,
+                                    pais = propertyCountry,
+                                    alquiler = propertyPriceInt
+                                )
+                            )
+
+                            Toast.makeText(context, createPropertySuccessMessage, Toast.LENGTH_LONG).show()
+                        }
+                        catch (e: Exception){
+                            Toast.makeText(context, createPropertyUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                        }
+
+                        showDialog = false
+                        onRefreshUserProperties()
+                    }
+                },
                 dialogTitle = stringResource(R.string.home_owner_create_property),
                 dialogText = "texto",
                 icon = null

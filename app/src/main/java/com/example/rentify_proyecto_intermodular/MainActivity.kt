@@ -41,6 +41,14 @@ class MainActivity : ComponentActivity() {
 
                 var actualUser by rememberSaveable { mutableStateOf<User?>(null) }
 
+                val onRefreshUserProperties: ()->Unit = {
+                    if (actualUser != null){
+                        actualUser = actualUser!!.copy(
+                            // TODO refresh owner properties by calling a new endpoint that retrieves properties by owner id
+                        )
+                    }
+                }
+
                 NavHost(
                     navController = navController,
                     startDestination = "Login"
@@ -78,7 +86,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onUserUpdate = { user ->
                                     actualUser = user
-                                }
+                                },
+                                onRefreshUserProperties = onRefreshUserProperties
                             )
                         }
                     }
