@@ -56,6 +56,9 @@
     <string name="home_owner_update_property_success">Property updated successfully</string>
     <string name="home_owner_delete_property_unexpected_error">There was an unexpected error while deleting the property.</string>
     <string name="home_owner_delete_property_success">Property deleted successfully</string>
+    <string name="home_owner_add_tenant_unexpected_error">There was an unexpected error adding the tenant.</string>
+    <string name="home_owner_add_tenant_success">Tenant added successfully</string>
+    <string name="home_owner_add_tenant_not_found_or_already_added">That tenant does not exist or is already registered in another property</string>
 
     <!-- Settings -->
     <string name="settings_slogan">Let\'s customize</string>

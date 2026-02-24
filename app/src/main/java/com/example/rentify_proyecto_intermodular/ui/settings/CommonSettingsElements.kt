@@ -64,50 +64,66 @@ fun UpdateAccountInfoCard(
         var oldPassword by remember { mutableStateOf("") }
 
         TextField(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             value = firstName,
             onValueChange = { firstName = it },
             label = { Text(text = stringResource(R.string.register_first_name_label)) }
         )
         TextField(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             value = lastName,
             onValueChange = { lastName = it },
             label = { Text(text = stringResource(R.string.register_last_name_label)) }
         )
         TextField(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
             label = { Text(text = stringResource(R.string.register_phone_label)) }
         )
         TextField(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             value = email,
             onValueChange = { email = it },
             label = { Text(text = stringResource(R.string.register_email_label)) }
         )
         TextField(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             value = newPassword,
             onValueChange = { newPassword = it },
             label = { Text(text = stringResource(R.string.settings_new_password)) }
         )
         TextField(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             value = confirmNewPassword,
             onValueChange = { confirmNewPassword = it },
             label = { Text(text = stringResource(R.string.settings_confirm_new_password)) }
         )
         TextField(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             value = oldPassword,
             onValueChange = { oldPassword = it },
             label = { Text(text = stringResource(R.string.settings_old_password)) }
         )
 
         Button(
-            modifier = Modifier.padding(bottom = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(bottom = 5.dp)
+                .fillMaxWidth(),
             onClick = {
                 if (newPassword == confirmNewPassword){
                     coroutineScope.launch {
@@ -159,7 +175,7 @@ fun LogoutCard(onUserLogout: () -> Unit) {
         title = stringResource(R.string.settings_logout_card)
     ) {
         Text(
-            text = "By pressing the button below, you will logout of your account. You will be redirected to login screen. You will have to login again to keep using the app"
+            text = stringResource(R.string.settings_logout_text)
         )
         Button(
             onClick = onUserLogout

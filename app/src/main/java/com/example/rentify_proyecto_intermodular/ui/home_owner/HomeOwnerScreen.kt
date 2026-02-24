@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.bindTenantToProperty
 import com.example.rentify_proyecto_intermodular.data.api.deleteProperty
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
@@ -53,12 +54,19 @@ fun HomeOwnerScreen(
     val context = LocalContext.current
 
     val invalidPriceFormatMessage = stringResource(R.string.home_owner_invalid_price_format)
+
     val createPropertySuccessMessage = stringResource(R.string.home_owner_create_property_success)
     val createPropertyUnexpectedErrorMessage = stringResource(R.string.home_owner_create_property_unexpected_error)
+
     val updatePropertySuccessMessage = stringResource(R.string.home_owner_update_property_success)
     val updatePropertyUnexpectedErrorMessage = stringResource(R.string.home_owner_update_property_unexpected_error)
+
     val deletePropertySuccessMessage = stringResource(R.string.home_owner_delete_property_success)
     val deletePropertyUnexpectedErrorMessage = stringResource(R.string.home_owner_delete_property_unexpected_error)
+
+    val addTenantSuccessMessage = stringResource(R.string.home_owner_add_tenant_success)
+    val addTenantUnexpectedErrorMessage = stringResource(R.string.home_owner_add_tenant_unexpected_error)
+    val addTenantNotFoundOrAlreadyRegisteredMessage = stringResource(R.string.home_owner_add_tenant_not_found_or_already_added)
 
     Column(
         modifier = modifier
@@ -274,7 +282,25 @@ fun HomeOwnerScreen(
                         if (showAddTenantDialog) {
                             CommonDialog(
                                 onDismissRequest = { showAddTenantDialog = !showAddTenantDialog },
-                                onConfirmation = { /*  todo ADD A NEW TENANT TO THE PROPERTY BY EMAIL */ },
+                                onConfirmation = {
+                                    coroutineScope.launch {
+                                        try {
+                                            val code = bindTenantToProperty(property.id, newTenantEmail)
+
+                                            when (code) {
+                                                0 -> Toast.makeText(context, addTenantSuccessMessage, Toast.LENGTH_LONG).show()
+                                                1 -> Toast.makeText(context, addTenantNotFoundOrAlreadyRegisteredMessage, Toast.LENGTH_LONG).show()
+                                                else -> Toast.makeText(context, addTenantUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                            }
+                                        }
+                                        catch (e: Exception){
+                                            Toast.makeText(context, deletePropertyUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                        }
+
+                                        showAddTenantDialog = false
+                                        onRefreshUserProperties()
+                                    }
+                                },
                                 dialogTitle = stringResource(R.string.home_owner_add_tenant),
                                 dialogText = "texto",
                                 icon = null
