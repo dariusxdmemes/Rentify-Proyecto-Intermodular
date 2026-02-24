@@ -222,16 +222,16 @@ suspend fun updateUser(user: User, actualpassword: String, newpassword: String )
 
 /**
  * Delete a user in the database
- * @param id_user
+ * @param userId
  * @return An status code. 0: success. 1: user not found. 2: unexpected error.
  */
-suspend fun deleteUser(id_user: Int): Int {
+suspend fun deleteUser(userId: Int): Int {
     try {
         return withContext(Dispatchers.IO) {
             var code = 1
 
             val request = Request.Builder()
-                .url("http://$HOST:$PORT/users/$id_user")
+                .url("http://$HOST:$PORT/users/$userId")
                 .delete()
                 .build()
 

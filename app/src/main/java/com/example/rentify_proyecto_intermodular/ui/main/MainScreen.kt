@@ -14,11 +14,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.model.User
 import com.example.rentify_proyecto_intermodular.data.model.UserType
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
@@ -39,7 +37,8 @@ import com.example.rentify_proyecto_intermodular.ui.incidents_tenant.IncidentsTe
 fun MainScreen(
     actualUser: User,
     onUserLogout: () -> Unit,
-    onUserUpdate: (User)->Unit
+    onUserUpdate: (User) -> Unit,
+    onRefreshUserProperties: () -> Unit
 ){
     val navController = rememberNavController()
     val startDestination = Destinations.HOME
@@ -76,7 +75,8 @@ fun MainScreen(
                 if (actualUser.type == UserType.OWNER){
                     HomeOwnerScreen(
                         modifier = Modifier.padding(contentPadding),
-                        actualUser = actualUser
+                        actualUser = actualUser,
+                        onRefreshUserProperties = onRefreshUserProperties
                     )
                 }
                 else if (actualUser.type == UserType.TENANT){

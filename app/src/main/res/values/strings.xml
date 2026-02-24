@@ -43,10 +43,22 @@
     <string name="euro">€</string>
     <string name="home_owner_update_property">Update</string>
     <string name="home_owner_delete_property">Delete</string>
+    <string name="home_owner_delete_property_dialog_title">Delete Property</string>
+    <string name="home_owner_delete_property_confirmation_message">Are you sure you want to delete that property?</string>
     <string name="home_owner_create_property">Register a New Property</string>
     <string name="home_tenant_no_property">You still do not have a leased property. Contact the owner.</string>
     <string name="home_owner_add_tenant">Add a tenant</string>
     <string name="home_tenant_no_pictures">This property has no pictures.</string>
+    <string name="home_owner_invalid_price_format">The property price must be a positive whole number</string>
+    <string name="home_owner_create_property_unexpected_error">There was an unexpected error while creating the property.</string>
+    <string name="home_owner_create_property_success">Property created successfully</string>
+    <string name="home_owner_update_property_unexpected_error">There was an unexpected error while updating the property.</string>
+    <string name="home_owner_update_property_success">Property updated successfully</string>
+    <string name="home_owner_delete_property_unexpected_error">There was an unexpected error while deleting the property.</string>
+    <string name="home_owner_delete_property_success">Property deleted successfully</string>
+    <string name="home_owner_add_tenant_unexpected_error">There was an unexpected error adding the tenant.</string>
+    <string name="home_owner_add_tenant_success">Tenant added successfully</string>
+    <string name="home_owner_add_tenant_not_found_or_already_added">That tenant does not exist or is already registered in another property</string>
 
     <!-- Settings -->
     <string name="settings_slogan">Let\'s customize</string>
