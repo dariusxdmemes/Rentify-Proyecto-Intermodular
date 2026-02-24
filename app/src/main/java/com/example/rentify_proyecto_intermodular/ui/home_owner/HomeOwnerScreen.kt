@@ -38,7 +38,7 @@ import kotlinx.coroutines.coroutineScope
 @Composable
 fun HomeOwnerScreen(
     modifier: Modifier,
-    actualUser: User?
+    actualUser: User
 ) {
     Column(
         modifier = modifier
@@ -64,7 +64,7 @@ fun HomeOwnerScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(actualUser?.ownedProperty ?: emptyList()) { property ->
+            items(actualUser.ownedProperty ?: emptyList()) { property ->
                 var tenants by remember { mutableStateOf<List<User>>(emptyList()) }
                 var services by remember { mutableStateOf<Service?>(null) }
                 var isLoading by remember { mutableStateOf(false) }

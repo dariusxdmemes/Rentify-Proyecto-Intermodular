@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.ui.common.CommonCard
 import com.example.rentify_proyecto_intermodular.ui.home_owner.HomeOwnerScreen
 import com.example.rentify_proyecto_intermodular.ui.login.LoginScreen
 import com.example.rentify_proyecto_intermodular.ui.main.MainScreen
@@ -64,8 +65,9 @@ class MainActivity : ComponentActivity() {
 
                     composable ("Main") {
                         if (actualUser == null) {
-                            Text(text="actualUser es null (PREGUNTAR A GUILLE!)")
-                            //no se puede llegar a ruta main con user null, por que si no no se puedria crear el contenido adecuado
+                            Text(
+                                text = "THERE WAS AN UNEXPECTED ERROR WHEN LOGGING IN. RETRY AGAIN OR CONTACT YOUR MANAGER.",
+                            )
                         }
                         else {
                             MainScreen(
