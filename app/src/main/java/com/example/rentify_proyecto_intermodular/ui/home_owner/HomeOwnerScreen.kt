@@ -31,6 +31,7 @@ import com.example.rentify_proyecto_intermodular.R
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.api.registerProperty
+import com.example.rentify_proyecto_intermodular.data.api.updateProperty
 import com.example.rentify_proyecto_intermodular.data.model.Property
 import com.example.rentify_proyecto_intermodular.data.model.Service
 import com.example.rentify_proyecto_intermodular.data.model.User
@@ -71,7 +72,7 @@ fun HomeOwnerScreen(
             color = MaterialTheme.colorScheme.scrim
         )
         Text(
-            text = stringResource(R.string.home_owner_slogan, actualUser?.firstName.toString()),
+            text = stringResource(R.string.home_owner_slogan, actualUser.firstName),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .padding(bottom = 40.dp)
@@ -167,12 +168,42 @@ fun HomeOwnerScreen(
                             mutableStateOf(services?.excluded ?: "Nothing to see...")
                         }
 
+                        // Dialog to update a property
                         if (showUpdateDialog) {
                             CommonDialog(
                                 onDismissRequest = { showUpdateDialog = !showUpdateDialog },
-                                onConfirmation = { /*  todo UPDATE THE PROPERTY WITH NEW CHANGES */ },
+                                onConfirmation = {
+                                    coroutineScope.launch {
+                                        val actualPriceInt = actualPrice.toIntOrNull()
+                                        if (actualPriceInt == null || actualPriceInt <= 0){
+                                            Toast.makeText(context, invalidPriceFormatMessage, Toast.LENGTH_LONG).show()
+                                            return@launch
+                                        }
+
+                                        try {
+                                            updateProperty(
+                                                Property(
+                                                    id = property.id,
+                                                    address = property.address,
+                                                    owner_fk = property.owner_fk,
+                                                    ciudad = property.ciudad,
+                                                    pais = property.pais,
+                                                    alquiler = actualPriceInt
+                                                )
+                                            )
+
+                                            Toast.makeText(context, updatePropertySuccessMessage, Toast.LENGTH_LONG).show()
+                                            showUpdateDialog = false
+                                        }
+                                        catch (e: Exception){
+                                            Toast.makeText(context, updatePropertyUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                        }
+
+                                        onRefreshUserProperties()
+                                    }
+                                },
                                 dialogTitle = stringResource(R.string.home_owner_update_property),
-                                dialogText = "texto",
+                                dialogText = "",
                                 icon = null
                             ) {
                                 Surface {

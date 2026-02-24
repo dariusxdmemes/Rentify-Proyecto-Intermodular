@@ -23,7 +23,7 @@ suspend fun registerProperty (property: Property) {
                     "owner_fk": "${property.owner_fk}",
                     "ciudad": "${property.ciudad}",
                     "pais": "${property.pais}",
-                    "alquiler": "${property.alquiler}"
+                    "alquiler": ${property.alquiler}
                 }
             """.trimIndent()
             val requestBody = jsonBody.toRequestBody(jsonMediaType)
@@ -40,6 +40,8 @@ suspend fun registerProperty (property: Property) {
                     code = 0 // success
                 }
             }
+
+            //TODO CREATE PROPERTY SERVICES TOO WITH THE DEDICATED ENDPOINT
 
             code
         }
