@@ -43,6 +43,8 @@
     <string name="euro">€</string>
     <string name="home_owner_update_property">Update</string>
     <string name="home_owner_delete_property">Delete</string>
+    <string name="home_owner_delete_property_dialog_title">Delete Property</string>
+    <string name="home_owner_delete_property_confirmation_message">Are you sure you want to delete that property?</string>
     <string name="home_owner_create_property">Register a New Property</string>
     <string name="home_tenant_no_property">You still do not have a leased property. Contact the owner.</string>
     <string name="home_owner_add_tenant">Add a tenant</string>

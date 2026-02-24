@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.deleteProperty
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.api.getTenantsByProperty
 import com.example.rentify_proyecto_intermodular.data.api.registerProperty
@@ -117,6 +118,7 @@ fun HomeOwnerScreen(
                     ) {
 
                         var showUpdateDialog by remember { mutableStateOf(false) }
+                        var showDeleteDialog by remember { mutableStateOf(false) }
                         var showAddTenantDialog by remember { mutableStateOf(false) }
 
                         if (isLoading) {
@@ -149,7 +151,9 @@ fun HomeOwnerScreen(
                             )
                             CommonButton(
                                 text = stringResource(R.string.home_owner_delete_property),
-                                onClick = {/* TODO DELETE PROPERTY*/ }
+                                onClick = {
+                                    showDeleteDialog = !showDeleteDialog
+                                }
                             )
                             CommonButton(
                              text = stringResource(R.string.home_owner_add_tenant),
@@ -158,6 +162,29 @@ fun HomeOwnerScreen(
                                 }
                             )
                         }
+
+                        //Dialog to delete a property
+                        if (showDeleteDialog)
+                            CommonDialog(
+                                onDismissRequest = { showDeleteDialog = false },
+                                dialogTitle = stringResource(R.string.home_owner_delete_property_dialog_title),
+                                dialogText = stringResource(R.string.home_owner_delete_property_confirmation_message),
+                                icon = null,
+                                content = {},
+                                onConfirmation = {
+                                    coroutineScope.launch {
+                                        try {
+                                            deleteProperty(property.id)
+                                            Toast.makeText(context, deletePropertySuccessMessage, Toast.LENGTH_LONG).show()
+                                        }
+                                        catch (e: Exception){
+                                            Toast.makeText(context, deletePropertyUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                        }
+                                        showDeleteDialog = false
+                                        onRefreshUserProperties()
+                                    }
+                                }
+                            )
 
                         var actualPrice by remember(property.alquiler) { mutableStateOf(property.alquiler.toString()) }
 
@@ -243,6 +270,7 @@ fun HomeOwnerScreen(
 
                         var newTenantEmail by remember { mutableStateOf("") }
 
+                        // Dialog to add a tenant to the property
                         if (showAddTenantDialog) {
                             CommonDialog(
                                 onDismissRequest = { showAddTenantDialog = !showAddTenantDialog },
@@ -272,7 +300,7 @@ fun HomeOwnerScreen(
             }
         }
 
-        var showDialog by remember { mutableStateOf(false) }
+        var showCreateDialog by remember { mutableStateOf(false) }
 
         var propertyPrice by remember { mutableStateOf("") }
         var propertyServices by remember { mutableStateOf("") }
@@ -285,13 +313,13 @@ fun HomeOwnerScreen(
         CommonButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.home_owner_create_property),
-            onClick = { showDialog = !showDialog }
+            onClick = { showCreateDialog = !showCreateDialog }
         )
 
         // Dialog to create a property
-        if (showDialog) {
+        if (showCreateDialog) {
             CommonDialog(
-                onDismissRequest = { showDialog = !showDialog },
+                onDismissRequest = { showCreateDialog = !showCreateDialog },
                 onConfirmation = {
                     coroutineScope.launch {
                         val propertyPriceInt = propertyPrice.toIntOrNull()
@@ -319,7 +347,7 @@ fun HomeOwnerScreen(
                             Toast.makeText(context, createPropertyUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
                         }
 
-                        showDialog = false
+                        showCreateDialog = false
                         onRefreshUserProperties()
                     }
                 },
