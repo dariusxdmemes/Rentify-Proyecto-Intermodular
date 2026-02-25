@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 
 /**
@@ -15,44 +16,44 @@ import java.io.IOException
  * @throws java.io.IOException on network error
  */
 suspend fun registerProperty (property: Property, service: Service) {
-    try {
-        return withContext(Dispatchers.IO) {
-            var code = 1
+    return withContext(Dispatchers.IO) {
+        var createdPropertyId: Int
 
-            val jsonBody = """
-                {
-                    "address": "${property.address}",
-                    "owner_fk": "${property.owner_fk}",
-                    "ciudad": "${property.ciudad}",
-                    "pais": "${property.pais}",
-                    "alquiler": ${property.alquiler}
-                }
-            """.trimIndent()
-            val requestBody = jsonBody.toRequestBody(jsonMediaType)
+        val jsonBody = """
+            {
+                "address": "${property.address}",
+                "owner_fk": "${property.owner_fk}",
+                "ciudad": "${property.ciudad}",
+                "pais": "${property.pais}",
+                "alquiler": ${property.alquiler}
+            }
+        """.trimIndent()
+        val requestBody = jsonBody.toRequestBody(jsonMediaType)
 
-            val request = Request.Builder()
-                .url("$BASE_URL/property/register")
-                .post(requestBody)
-                .build()
+        val request = Request.Builder()
+            .url("$BASE_URL/property/register")
+            .post(requestBody)
+            .build()
 
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    code = 1
-                } else {
-                    code = 0 // success
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful){
+                createdPropertyId = JSONObject(
+                    response.body?.string() ?: throw IOException("Empty body")
+                ).getInt("id")
+            }
+            else {
+                when (response.code){
+                    400 -> throw IOException("Missing field")
+                    404 -> throw IOException("Not found")
+                    else -> throw IOException("Unexpected error")
                 }
             }
-
-            // TODO RETRIEVE PROPERTY ID FROM THE PREVIOUS RESPONSE
-            createServicesOnProperty(
-                propertyId = property.id,
-                service = service
-            )
-
-            code
         }
-    } catch (e: Exception) {
-        throw IOException(e.message)
+
+        createServicesOnProperty(
+            propertyId = createdPropertyId,
+            service = service
+        )
     }
 }
 
