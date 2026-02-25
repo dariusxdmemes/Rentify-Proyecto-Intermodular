@@ -74,3 +74,36 @@ suspend fun createServicesOnProperty (propertyId: Int, service: Service) {
         }
     }
 }
+
+/**
+ * Sends a request to update the services of a property
+ * @param propertyId The property of the service to be updated
+ * @param newService The new service of the property
+ * @throws IOException On network error
+ */
+suspend fun updateServicesOfProperty (propertyId: Int, newService: Service) {
+    withContext(Dispatchers.IO) {
+        val jsonBody = """
+            {
+                "property_fk": $propertyId,
+                "included": "${newService.included}",
+                "excluded": "${newService.excluded}"
+            }
+        """.trimIndent()
+        val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$BASE_URL/services/update")
+            .put(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) return@use
+            when (response.code) {
+                400 -> throw IOException("Missing field")
+                404 -> throw IOException("Property not found")
+                else -> throw IOException("Unexpected error")
+            }
+        }
+    }
+}

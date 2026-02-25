@@ -210,7 +210,7 @@ fun HomeOwnerScreen(
                                 onConfirmation = {
                                     coroutineScope.launch {
                                         val actualPriceInt = actualPrice.toIntOrNull()
-                                        if (actualPriceInt == null || actualPriceInt <= 0){
+                                        if (actualPriceInt == null || actualPriceInt <= 0) {
                                             Toast.makeText(context, invalidPriceFormatMessage, Toast.LENGTH_LONG).show()
                                             return@launch
                                         }
@@ -224,6 +224,10 @@ fun HomeOwnerScreen(
                                                     ciudad = property.ciudad,
                                                     pais = property.pais,
                                                     alquiler = actualPriceInt
+                                                ),
+                                                Service(
+                                                    included = actualServices,
+                                                    excluded = actualExcludedServices
                                                 )
                                             )
 

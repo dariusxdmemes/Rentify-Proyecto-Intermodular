@@ -61,7 +61,7 @@ suspend fun registerProperty (property: Property, service: Service) {
  * @param property The passed property to be updated.
  * @throws IOException on network error
  */
-suspend fun updateProperty (property: Property) {
+suspend fun updateProperty (property: Property, service: Service) {
     withContext(Dispatchers.IO) {
         val jsonBody = """
             {
@@ -87,6 +87,8 @@ suspend fun updateProperty (property: Property) {
                 else -> throw IOException("Unexpected error")
             }
         }
+
+        updateServicesOfProperty(property.id, service)
     }
 }
 
