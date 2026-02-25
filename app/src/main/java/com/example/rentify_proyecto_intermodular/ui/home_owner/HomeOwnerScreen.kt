@@ -97,7 +97,7 @@ fun HomeOwnerScreen(
                 var services by remember { mutableStateOf<Service?>(null) }
                 var isLoading by remember { mutableStateOf(false) }
 
-                LaunchedEffect(property.id) {
+                LaunchedEffect(property) {
                     isLoading = true
                     try {
                         coroutineScope {

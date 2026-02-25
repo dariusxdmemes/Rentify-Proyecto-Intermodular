@@ -29,14 +29,11 @@ suspend fun getServicesByProperty(propertyId: Int): Service? {
                 val body = response.body?.string() ?: throw IOException("Empty body")
                 val jsonObject = JSONObject(body)
 
-                if (jsonObject.isNull("included") && jsonObject.isNull("excluded")) {
-                    null
-                } else {
-                    Service(
-                        included = jsonObject.getString("included"),
-                        excluded = jsonObject.getString("excluded")
-                    )
-                }
+                if (jsonObject.isNull("included") || jsonObject.isNull("excluded")) null
+                else Service(
+                    included = jsonObject.getString("included"),
+                    excluded = jsonObject.getString("excluded")
+                )
             }
         }
     } catch (e: Exception) {

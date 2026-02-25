@@ -1,10 +1,14 @@
 package com.example.rentify_proyecto_intermodular.data.api
 
+import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.Property
+import com.example.rentify_proyecto_intermodular.data.model.User
+import com.example.rentify_proyecto_intermodular.data.model.UserType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import java.io.IOException
 
 /**
@@ -101,6 +105,47 @@ suspend fun deleteProperty (propertyId: Int) {
             when (response.code) {
                 404 -> throw IOException("Property not found")
                 else -> throw IOException("Unexpected error")
+            }
+        }
+    }
+}
+
+/**
+ * Sends a request to get the properties of the specified owner
+ * @param ownerId the ID of the specified owner
+ * @return A list with the properties of that owner
+ * @throws IOException on network error
+ */
+suspend fun getPropertiesByOwner (ownerId: Int): List<Property> {
+    return withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("http://$HOST:$PORT/property/owner/$ownerId")
+            .get()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                when (response.code){
+                    400 -> throw IOException("Missing field")
+                    404 -> throw IOException("Not found")
+                    else -> throw IOException("Unexpected error")
+                }
+            }
+
+            val body = response.body?.string() ?: throw IOException("Empty body")
+            val jsonArray = JSONArray(body)
+
+            List (jsonArray.length()) { i ->
+                val property = jsonArray.getJSONObject(i)
+
+                Property(
+                    id = property.getInt("id"),
+                    address = property.getString("address"),
+                    owner_fk = property.getInt("owner_fk"),
+                    ciudad = property.getString("ciudad"),
+                    pais = property.getString("pais"),
+                    alquiler = property.getInt("alquiler")
+                )
             }
         }
     }
