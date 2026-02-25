@@ -4,6 +4,7 @@ import com.example.rentify_proyecto_intermodular.data.model.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 
@@ -13,7 +14,7 @@ import java.io.IOException
  * @return Service or null if not exists
  * @throws java.io.IOException Network or unexpected error
  */
-suspend fun getServicesByProperty(propertyId: Int): Service? {
+suspend fun getServicesByProperty (propertyId: Int): Service? {
     try {
         return withContext(Dispatchers.IO) {
             val request = Request.Builder()
@@ -38,5 +39,38 @@ suspend fun getServicesByProperty(propertyId: Int): Service? {
         }
     } catch (e: Exception) {
         throw IOException("Unexpected error")
+    }
+}
+
+/**
+ * Sends a request to create a service on a specific property
+ * @param propertyId the ID of the bound property
+ * @param service the service object with the information
+ * @throws IOException on network error
+ */
+suspend fun createServicesOnProperty (propertyId: Int, service: Service) {
+    withContext(Dispatchers.IO) {
+        val jsonBody = """
+            {
+                "property_fk": $propertyId,
+                "included": "${service.included}",
+                "excluded": "${service.excluded}"
+            }
+        """.trimIndent()
+        val requestBody = jsonBody.toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$BASE_URL/services/create")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) return@use
+            when (response.code) {
+                400 -> throw IOException("Missing field")
+                404 -> throw IOException("Property not found")
+                else -> throw IOException("Unexpected error")
+            }
+        }
     }
 }

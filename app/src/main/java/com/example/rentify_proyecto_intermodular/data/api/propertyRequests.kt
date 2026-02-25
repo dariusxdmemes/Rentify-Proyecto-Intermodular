@@ -1,9 +1,7 @@
 package com.example.rentify_proyecto_intermodular.data.api
 
-import com.example.rentify_proyecto_intermodular.data.model.Incident
 import com.example.rentify_proyecto_intermodular.data.model.Property
-import com.example.rentify_proyecto_intermodular.data.model.User
-import com.example.rentify_proyecto_intermodular.data.model.UserType
+import com.example.rentify_proyecto_intermodular.data.model.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
@@ -16,7 +14,7 @@ import java.io.IOException
  * @param property The `Property` object that needs to be registered. ID field is ignored.
  * @throws java.io.IOException on network error
  */
-suspend fun registerProperty (property: Property) {
+suspend fun registerProperty (property: Property, service: Service) {
     try {
         return withContext(Dispatchers.IO) {
             var code = 1
@@ -45,12 +43,16 @@ suspend fun registerProperty (property: Property) {
                 }
             }
 
-            //TODO CREATE PROPERTY SERVICES TOO WITH THE DEDICATED ENDPOINT
+            // TODO RETRIEVE PROPERTY ID FROM THE PREVIOUS RESPONSE
+            createServicesOnProperty(
+                propertyId = property.id,
+                service = service
+            )
 
             code
         }
     } catch (e: Exception) {
-        throw IOException("Unexpected error")
+        throw IOException(e.message)
     }
 }
 

@@ -363,7 +363,11 @@ fun HomeOwnerScreen(
                                     owner_fk = actualUser.id,
                                     ciudad = propertyCity,
                                     pais = propertyCountry,
-                                    alquiler = propertyPriceInt
+                                    alquiler = propertyPriceInt,
+                                ),
+                                service = Service (
+                                    included = propertyServices,
+                                    excluded = propertyExcludedServices
                                 )
                             )
 
