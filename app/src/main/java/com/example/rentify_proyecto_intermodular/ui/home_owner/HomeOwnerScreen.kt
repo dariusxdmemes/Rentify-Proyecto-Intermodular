@@ -68,6 +68,9 @@ fun HomeOwnerScreen(
     val addTenantUnexpectedErrorMessage = stringResource(R.string.home_owner_add_tenant_unexpected_error)
     val addTenantNotFoundOrAlreadyRegisteredMessage = stringResource(R.string.home_owner_add_tenant_not_found_or_already_added)
 
+    var refreshTenantsAndServicesTrigger by remember {mutableStateOf(0)}
+    val refreshTenantsAndServices = {refreshTenantsAndServicesTrigger++}
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -97,7 +100,7 @@ fun HomeOwnerScreen(
                 var services by remember { mutableStateOf<Service?>(null) }
                 var isLoading by remember { mutableStateOf(false) }
 
-                LaunchedEffect(property) {
+                LaunchedEffect(refreshTenantsAndServicesTrigger) {
                     isLoading = true
                     try {
                         coroutineScope {
@@ -190,6 +193,7 @@ fun HomeOwnerScreen(
                                         }
                                         showDeleteDialog = false
                                         onRefreshUserProperties()
+                                        refreshTenantsAndServices()
                                     }
                                 }
                             )
@@ -239,6 +243,7 @@ fun HomeOwnerScreen(
                                         }
 
                                         onRefreshUserProperties()
+                                        refreshTenantsAndServices()
                                     }
                                 },
                                 dialogTitle = stringResource(R.string.home_owner_update_property),
@@ -298,11 +303,12 @@ fun HomeOwnerScreen(
                                             }
                                         }
                                         catch (e: Exception){
-                                            Toast.makeText(context, deletePropertyUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                            Toast.makeText(context, addTenantUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
                                         }
 
                                         showAddTenantDialog = false
                                         onRefreshUserProperties()
+                                        refreshTenantsAndServices()
                                     }
                                 },
                                 dialogTitle = stringResource(R.string.home_owner_add_tenant),
@@ -383,6 +389,7 @@ fun HomeOwnerScreen(
 
                         showCreateDialog = false
                         onRefreshUserProperties()
+                        refreshTenantsAndServices()
                     }
                 },
                 dialogTitle = stringResource(R.string.home_owner_create_property),

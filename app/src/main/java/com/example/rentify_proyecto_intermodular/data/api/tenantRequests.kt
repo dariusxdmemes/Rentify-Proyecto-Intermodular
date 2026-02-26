@@ -16,39 +16,39 @@ import java.io.IOException
  * @throws java.io.IOException Network or unexpected error
  */
 suspend fun getTenantsByProperty(propertyId: Int): List<User> {
-    try {
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://$HOST:$PORT/property/tenants/$propertyId")
-                .get()
-                .build()
+    return withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("http://$HOST:$PORT/property/tenants/$propertyId")
+            .get()
+            .build()
 
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw IOException("Unexpected error")
-                }
-
-                val body = response.body?.string() ?: throw IOException("Empty body")
-                val jsonArray = JSONArray(body)
-
-                List(jsonArray.length()) { i ->
-                    val u = jsonArray.getJSONObject(i)
-                    User(
-                        id = u.getInt("id"),
-                        firstName = u.getString("first_name"),
-                        lastName = u.getString("last_name"),
-                        phoneNumber = u.getString("phone_number"),
-                        email = u.getString("email"),
-                        password = "",
-                        ownedProperty = null,
-                        leasedProperty = null,
-                        type = UserType.TENANT
-                    )
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                when(response.code){
+                    400 -> throw IOException("Missing field")
+                    404 -> throw IOException("Not found")
+                    else -> throw IOException("Unexpected error")
                 }
             }
+
+            val body = response.body?.string() ?: throw IOException("Empty body")
+            val jsonArray = JSONArray(body)
+
+            List(jsonArray.length()) { i ->
+                val u = jsonArray.getJSONObject(i)
+                User(
+                    id = u.getInt("id"),
+                    firstName = u.getString("first_name"),
+                    lastName = u.getString("last_name"),
+                    phoneNumber = u.getString("phone_number"),
+                    email = u.getString("email"),
+                    password = "",
+                    ownedProperty = null,
+                    leasedProperty = null,
+                    type = UserType.TENANT
+                )
+            }
         }
-    } catch (e: Exception) {
-        throw IOException("Unexpected error")
     }
 }
 

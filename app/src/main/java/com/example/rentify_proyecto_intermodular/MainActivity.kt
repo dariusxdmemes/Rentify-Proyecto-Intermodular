@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
                     composable ("Main") {
                         if (actualUser == null) {
                             Text(
-                                text = "THERE WAS AN UNEXPECTED ERROR WHEN LOGGING IN. RETRY AGAIN OR CONTACT YOUR MANAGER.",
+                                text = "THERE WAS AN UNEXPECTED ERROR WHEN LOGGING IN. REOPEN THE APP OR CONTACT YOUR MANAGER.",
                             )
                         }
                         else {
