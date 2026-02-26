@@ -68,6 +68,9 @@ fun HomeOwnerScreen(
     val addTenantUnexpectedErrorMessage = stringResource(R.string.home_owner_add_tenant_unexpected_error)
     val addTenantNotFoundOrAlreadyRegisteredMessage = stringResource(R.string.home_owner_add_tenant_not_found_or_already_added)
 
+    var refreshTenantsAndServicesTrigger by remember {mutableStateOf(0)}
+    val refreshTenantsAndServices = {refreshTenantsAndServicesTrigger++}
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -97,7 +100,7 @@ fun HomeOwnerScreen(
                 var services by remember { mutableStateOf<Service?>(null) }
                 var isLoading by remember { mutableStateOf(false) }
 
-                LaunchedEffect(property.id) {
+                LaunchedEffect(refreshTenantsAndServicesTrigger) {
                     isLoading = true
                     try {
                         coroutineScope {
@@ -190,6 +193,7 @@ fun HomeOwnerScreen(
                                         }
                                         showDeleteDialog = false
                                         onRefreshUserProperties()
+                                        refreshTenantsAndServices()
                                     }
                                 }
                             )
@@ -210,7 +214,7 @@ fun HomeOwnerScreen(
                                 onConfirmation = {
                                     coroutineScope.launch {
                                         val actualPriceInt = actualPrice.toIntOrNull()
-                                        if (actualPriceInt == null || actualPriceInt <= 0){
+                                        if (actualPriceInt == null || actualPriceInt <= 0) {
                                             Toast.makeText(context, invalidPriceFormatMessage, Toast.LENGTH_LONG).show()
                                             return@launch
                                         }
@@ -224,6 +228,10 @@ fun HomeOwnerScreen(
                                                     ciudad = property.ciudad,
                                                     pais = property.pais,
                                                     alquiler = actualPriceInt
+                                                ),
+                                                Service(
+                                                    included = actualServices,
+                                                    excluded = actualExcludedServices
                                                 )
                                             )
 
@@ -235,6 +243,7 @@ fun HomeOwnerScreen(
                                         }
 
                                         onRefreshUserProperties()
+                                        refreshTenantsAndServices()
                                     }
                                 },
                                 dialogTitle = stringResource(R.string.home_owner_update_property),
@@ -294,11 +303,12 @@ fun HomeOwnerScreen(
                                             }
                                         }
                                         catch (e: Exception){
-                                            Toast.makeText(context, deletePropertyUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
+                                            Toast.makeText(context, addTenantUnexpectedErrorMessage, Toast.LENGTH_LONG).show()
                                         }
 
                                         showAddTenantDialog = false
                                         onRefreshUserProperties()
+                                        refreshTenantsAndServices()
                                     }
                                 },
                                 dialogTitle = stringResource(R.string.home_owner_add_tenant),
@@ -363,7 +373,11 @@ fun HomeOwnerScreen(
                                     owner_fk = actualUser.id,
                                     ciudad = propertyCity,
                                     pais = propertyCountry,
-                                    alquiler = propertyPriceInt
+                                    alquiler = propertyPriceInt,
+                                ),
+                                service = Service (
+                                    included = propertyServices,
+                                    excluded = propertyExcludedServices
                                 )
                             )
 
@@ -375,6 +389,7 @@ fun HomeOwnerScreen(
 
                         showCreateDialog = false
                         onRefreshUserProperties()
+                        refreshTenantsAndServices()
                     }
                 },
                 dialogTitle = stringResource(R.string.home_owner_create_property),

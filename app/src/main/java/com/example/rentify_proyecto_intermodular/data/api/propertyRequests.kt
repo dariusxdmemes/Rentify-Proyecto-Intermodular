@@ -1,10 +1,13 @@
 package com.example.rentify_proyecto_intermodular.data.api
 
 import com.example.rentify_proyecto_intermodular.data.model.Property
+import com.example.rentify_proyecto_intermodular.data.model.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 
 /**
@@ -12,41 +15,45 @@ import java.io.IOException
  * @param property The `Property` object that needs to be registered. ID field is ignored.
  * @throws java.io.IOException on network error
  */
-suspend fun registerProperty (property: Property) {
-    try {
-        return withContext(Dispatchers.IO) {
-            var code = 1
+suspend fun registerProperty (property: Property, service: Service) {
+    return withContext(Dispatchers.IO) {
+        var createdPropertyId: Int
 
-            val jsonBody = """
-                {
-                    "address": "${property.address}",
-                    "owner_fk": "${property.owner_fk}",
-                    "ciudad": "${property.ciudad}",
-                    "pais": "${property.pais}",
-                    "alquiler": ${property.alquiler}
-                }
-            """.trimIndent()
-            val requestBody = jsonBody.toRequestBody(jsonMediaType)
+        val jsonBody = """
+            {
+                "address": "${property.address}",
+                "owner_fk": "${property.owner_fk}",
+                "ciudad": "${property.ciudad}",
+                "pais": "${property.pais}",
+                "alquiler": ${property.alquiler}
+            }
+        """.trimIndent()
+        val requestBody = jsonBody.toRequestBody(jsonMediaType)
 
-            val request = Request.Builder()
-                .url("$BASE_URL/property/register")
-                .post(requestBody)
-                .build()
+        val request = Request.Builder()
+            .url("$BASE_URL/property/register")
+            .post(requestBody)
+            .build()
 
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    code = 1
-                } else {
-                    code = 0 // success
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful){
+                createdPropertyId = JSONObject(
+                    response.body?.string() ?: throw IOException("Empty body")
+                ).getInt("id")
+            }
+            else {
+                when (response.code){
+                    400 -> throw IOException("Missing field")
+                    404 -> throw IOException("Not found")
+                    else -> throw IOException("Unexpected error")
                 }
             }
-
-            //TODO CREATE PROPERTY SERVICES TOO WITH THE DEDICATED ENDPOINT
-
-            code
         }
-    } catch (e: Exception) {
-        throw IOException("Unexpected error")
+
+        createServicesOnProperty(
+            propertyId = createdPropertyId,
+            service = service
+        )
     }
 }
 
@@ -55,7 +62,7 @@ suspend fun registerProperty (property: Property) {
  * @param property The passed property to be updated.
  * @throws IOException on network error
  */
-suspend fun updateProperty (property: Property) {
+suspend fun updateProperty (property: Property, service: Service) {
     withContext(Dispatchers.IO) {
         val jsonBody = """
             {
@@ -81,6 +88,8 @@ suspend fun updateProperty (property: Property) {
                 else -> throw IOException("Unexpected error")
             }
         }
+
+        updateServicesOfProperty(property.id, service)
     }
 }
 
@@ -101,6 +110,47 @@ suspend fun deleteProperty (propertyId: Int) {
             when (response.code) {
                 404 -> throw IOException("Property not found")
                 else -> throw IOException("Unexpected error")
+            }
+        }
+    }
+}
+
+/**
+ * Sends a request to get the properties of the specified owner
+ * @param ownerId the ID of the specified owner
+ * @return A list with the properties of that owner
+ * @throws IOException on network error
+ */
+suspend fun getPropertiesByOwner (ownerId: Int): List<Property> {
+    return withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("http://$HOST:$PORT/property/owner/$ownerId")
+            .get()
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                when (response.code){
+                    400 -> throw IOException("Missing field")
+                    404 -> throw IOException("Not found")
+                    else -> throw IOException("Unexpected error")
+                }
+            }
+
+            val body = response.body?.string() ?: throw IOException("Empty body")
+            val jsonArray = JSONArray(body)
+
+            List (jsonArray.length()) { i ->
+                val property = jsonArray.getJSONObject(i)
+
+                Property(
+                    id = property.getInt("id"),
+                    address = property.getString("address"),
+                    owner_fk = property.getInt("owner_fk"),
+                    ciudad = property.getString("ciudad"),
+                    pais = property.getString("pais"),
+                    alquiler = property.getInt("alquiler")
+                )
             }
         }
     }
