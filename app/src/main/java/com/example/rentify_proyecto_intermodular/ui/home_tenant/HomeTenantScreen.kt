@@ -146,29 +146,31 @@ fun HomeTenantScreen(
                     }
                 }
 
-                HorizontalUncontainedCarousel(
-                    state = rememberCarouselState { fotosPropiedades.count() },
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .padding(top = 45.dp, bottom = 10.dp),
-                    itemSpacing = 10.dp,
-                    itemWidth = 160.dp,
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) { i ->
-                    val items = fotosPropiedades[i]
-
-                    AsyncImage(
-                        model = items,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
                 if (fotosPropiedades.isEmpty()) {
                     Text(
                         text = stringResource(R.string.home_tenant_no_pictures),
                         fontSize = 15.sp
                     )
-                } else {
+                }
+                else {
+                    HorizontalUncontainedCarousel(
+                        state = rememberCarouselState { fotosPropiedades.count() },
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .padding(top = 45.dp, bottom = 10.dp),
+                        itemSpacing = 10.dp,
+                        itemWidth = 160.dp,
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) { i ->
+                        val items = fotosPropiedades[i]
+
+                        AsyncImage(
+                            model = items,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
                     Text(
                         text = "${actualUser.leasedProperty?.address}",
                         modifier = Modifier.basicMarquee(),
