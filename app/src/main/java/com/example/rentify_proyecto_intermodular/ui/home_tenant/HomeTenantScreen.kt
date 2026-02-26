@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.rentify_proyecto_intermodular.R
+import com.example.rentify_proyecto_intermodular.data.api.getImageUrls
 import com.example.rentify_proyecto_intermodular.data.api.getOwnerUser
 import com.example.rentify_proyecto_intermodular.data.api.getServicesByProperty
 import com.example.rentify_proyecto_intermodular.data.model.Property
@@ -63,9 +64,13 @@ fun HomeTenantScreen(
                     val ownerDeferred = async {
                         getOwnerUser(leasedProperty.owner_fk)
                     }
+                    val imageUrls = async {
+                        getImageUrls()
+                    }
 
                     services = servicesDeferred.await()
                     owner = ownerDeferred.await()
+                    fotosPropiedades = imageUrls.await()
                 }
             } finally {
                 isLoading = false
