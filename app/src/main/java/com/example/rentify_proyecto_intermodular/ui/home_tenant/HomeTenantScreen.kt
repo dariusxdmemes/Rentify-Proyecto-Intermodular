@@ -124,7 +124,7 @@ fun HomeTenantScreen(
                             Text(
                                 text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
                                         "${owner?.firstName ?: stringResource(R.string.home_tenant_unavalible_owner)} " +
-                                        "${owner?.lastName ?: stringResource(R.string.home_tenant_unavalible_owner)}",
+                                        (owner?.lastName ?: ""),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -138,8 +138,7 @@ fun HomeTenantScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included}"
-                                    ?: stringResource(R.string.home_tenant_unavalible_services),
+                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included ?: stringResource(R.string.home_tenant_unavalible_services)}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
