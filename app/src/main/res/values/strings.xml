@@ -38,7 +38,8 @@
     <string name="home_tenant_adress_placeholder">Address: </string>
     <string name="home_tenant_price">Rent: </string>
     <string name="home_tenant_services">Services included: </string>
-    <string name="home_tenant_unavalible_services">No services included</string>
+    <string name="home_tenant_services_not_included">Services not included: </string>
+    <string name="home_tenant_unavalible_services">No services available</string>
     <string name="home_tenant_unavalible_owner">Owner not available</string>
     <string name="euro">€</string>
     <string name="home_owner_update_property">Update</string>

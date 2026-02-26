@@ -141,6 +141,10 @@ fun HomeTenantScreen(
                                 text = "${stringResource(R.string.home_tenant_services)} ${services?.included ?: stringResource(R.string.home_tenant_unavalible_services)}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_services_not_included)} ${services?.excluded ?: stringResource(R.string.home_tenant_unavalible_services)}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
 
                     }

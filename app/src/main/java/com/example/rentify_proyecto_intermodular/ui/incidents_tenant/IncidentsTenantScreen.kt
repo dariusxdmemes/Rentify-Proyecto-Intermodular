@@ -129,6 +129,7 @@ fun IncidentsTenantScreen(
                 * de ella, ademas de poder editarla (editar asunto, editar descripcion) */
 
                 incidents.isEmpty() -> {
+                    // Card to create an incident (when there are no incidents)
                     CommonCard(
                         title = stringResource(R.string.incidents_create_button),
                         expanded = false,
@@ -199,6 +200,8 @@ fun IncidentsTenantScreen(
                                     cursorColor = MaterialTheme.colorScheme.scrim
                                 )
                             )
+
+                            // Button to create an incident (card)
                             ElevatedButton(
                                 modifier = Modifier
                                     .fillMaxWidth(),
@@ -223,6 +226,8 @@ fun IncidentsTenantScreen(
 
                                         showCreateIncidentDialog = false
                                         refreshTrigger++
+                                        issuePlaceholder = ""
+                                        descriptionPlaceholder = ""
                                     }
                                 }
                             ) {
@@ -310,6 +315,8 @@ fun IncidentsTenantScreen(
 
                                                         showUpdateDialog = false
                                                         refreshTrigger++
+                                                        newIssue = ""
+                                                        newDescription = ""
                                                     }
                                                 },
                                                 dialogTitle = updateDialogTitle,
@@ -402,6 +409,7 @@ fun IncidentsTenantScreen(
                 }
             }
 
+            // Button to create an incident (bottom)
             CommonButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.incidents_new_incident_fab_title),
@@ -410,6 +418,7 @@ fun IncidentsTenantScreen(
                 }
             )
 
+            // Dialog to create an incident (bottom)
             if (showCreateIncidentDialog)
                 CommonDialog(
                     onDismissRequest = { showCreateIncidentDialog = false },
@@ -434,6 +443,8 @@ fun IncidentsTenantScreen(
 
                             showCreateIncidentDialog = false
                             refreshTrigger++
+                            issuePlaceholder = ""
+                            descriptionPlaceholder = ""
                         }
                     },
                     dialogTitle = createDialogTitle,
