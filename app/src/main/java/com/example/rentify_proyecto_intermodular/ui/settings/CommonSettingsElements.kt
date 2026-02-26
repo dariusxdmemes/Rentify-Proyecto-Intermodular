@@ -203,7 +203,7 @@ fun DeleteAccountCard(actualUser: User, onUserLogout: () -> Unit, context: Conte
                     when (code) {
                         0 -> {
                             Toast.makeText(context, "Account deleted successfully", Toast.LENGTH_LONG).show()
-                            delay(5000)
+                            delay(1000)
                             onUserLogout()
                         }
                         1 -> Toast.makeText(context, "Unexpected error: this user wasn't found in the database", Toast.LENGTH_LONG).show()
