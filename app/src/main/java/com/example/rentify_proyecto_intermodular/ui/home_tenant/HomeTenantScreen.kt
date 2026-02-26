@@ -124,7 +124,7 @@ fun HomeTenantScreen(
                             Text(
                                 text = "${stringResource(R.string.home_tenant_name_placeholder)} " +
                                         "${owner?.firstName ?: stringResource(R.string.home_tenant_unavalible_owner)} " +
-                                        "${owner?.lastName ?: stringResource(R.string.home_tenant_unavalible_owner)}",
+                                        (owner?.lastName ?: ""),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -138,8 +138,11 @@ fun HomeTenantScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included}"
-                                    ?: stringResource(R.string.home_tenant_unavalible_services),
+                                text = "${stringResource(R.string.home_tenant_services)} ${services?.included ?: stringResource(R.string.home_tenant_unavalible_services)}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "${stringResource(R.string.home_tenant_services_not_included)} ${services?.excluded ?: stringResource(R.string.home_tenant_unavalible_services)}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -147,29 +150,31 @@ fun HomeTenantScreen(
                     }
                 }
 
-                HorizontalUncontainedCarousel(
-                    state = rememberCarouselState { fotosPropiedades.count() },
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .padding(top = 45.dp, bottom = 10.dp),
-                    itemSpacing = 10.dp,
-                    itemWidth = 160.dp,
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) { i ->
-                    val items = fotosPropiedades[i]
-
-                    AsyncImage(
-                        model = items,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
                 if (fotosPropiedades.isEmpty()) {
                     Text(
                         text = stringResource(R.string.home_tenant_no_pictures),
                         fontSize = 15.sp
                     )
-                } else {
+                }
+                else {
+                    HorizontalUncontainedCarousel(
+                        state = rememberCarouselState { fotosPropiedades.count() },
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .padding(top = 45.dp, bottom = 10.dp),
+                        itemSpacing = 10.dp,
+                        itemWidth = 160.dp,
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) { i ->
+                        val items = fotosPropiedades[i]
+
+                        AsyncImage(
+                            model = items,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
                     Text(
                         text = "${actualUser.leasedProperty?.address}",
                         modifier = Modifier.basicMarquee(),
